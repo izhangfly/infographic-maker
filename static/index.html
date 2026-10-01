@@ -1,0 +1,2662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IZhang Aviation · Infographic Maker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0c0a; --panel:#101310; --panel2:#161a16; --line:#262c26;
+    --text:#e7e5e4; --dim:#78716b; --green:#37f712; --blue:#00a6f4;
+    --danger:#ff2157; --warning:#fe9900;
+    --fmono:"Space Mono",ui-monospace,Menlo,monospace;
+    --flabel:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0; border-radius:0 !important;}
+  body{background:var(--bg); color:var(--text); font-family:var(--fmono); min-height:100vh; font-size:14px;}
+  ::selection{background:var(--green); color:#000;}
+  header{padding:20px 32px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:12px;}
+  header h1{font-size:16px; font-weight:700; letter-spacing:1px; text-transform:uppercase;}
+  header h1::before{content:"▮ "; color:var(--green);}
+  main{display:grid; grid-template-columns:minmax(370px,440px) 1fr; gap:20px; padding:20px 32px; align-items:start;}
+  @media (max-width:1100px){ main{grid-template-columns:1fr;} }
+  .card{background:var(--panel); border:1px solid var(--line); padding:16px;}
+  .card h2{font-family:var(--flabel); font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--green); margin-bottom:12px;}
+  .step{display:flex; flex-direction:column; gap:14px;}
+  label{font-family:var(--flabel); font-size:11px; color:var(--dim); display:block; margin-bottom:6px; letter-spacing:.5px; text-transform:uppercase;}
+  input[type=text], textarea{
+    width:100%; background:var(--panel2); border:1px solid var(--line); color:var(--text);
+    padding:9px 11px; font-size:13px; font-family:var(--fmono);
+  }
+  input[type=text]:focus, textarea:focus, button:focus-visible{outline:2px solid var(--green); outline-offset:1px; border-color:var(--green);}
+  textarea{resize:vertical; font-family:var(--flabel); font-size:12px; line-height:1.5;}
+  #dropzone,#rDropzone{
+    border:1px dashed var(--line); padding:20px; text-align:center;
+    color:var(--dim); font-size:12.5px; cursor:pointer;
+  }
+  #dropzone.hover,#rDropzone.hover{border-color:var(--green); color:var(--text);}
+  #dropzone.loaded,#rDropzone.loaded{border-style:solid; border-color:var(--green); color:var(--text);}
+  #thumb,#rThumb{max-width:100%; max-height:170px; margin-top:10px; display:none; image-rendering:auto; background:
+    linear-gradient(45deg,#1a1e1a 25%,transparent 25%,transparent 75%,#1a1e1a 75%),
+    linear-gradient(45deg,#1a1e1a 25%,#101310 25%,#101310 75%,#1a1e1a 75%);
+    background-size:18px 18px; background-position:0 0,9px 9px;}
+  button{
+    background:var(--green); color:#000; border:1px solid var(--green); padding:10px 16px;
+    font-size:12px; font-weight:700; cursor:pointer; font-family:var(--flabel);
+    letter-spacing:1px; text-transform:uppercase;
+  }
+  button:hover{background:#000; color:var(--green);}
+  button:disabled{opacity:.4; cursor:not-allowed;}
+  button.ghost{background:transparent; color:var(--blue); border:1px solid var(--blue);}
+  button.ghost:hover{background:var(--blue); color:#000;}
+  .row{display:flex; gap:8px; align-items:center;}
+  .row > *{flex:1;}
+  #status,#rStatus{font-family:var(--flabel); font-size:12px; color:var(--dim); min-height:18px;}
+  #status::before,#rStatus::before{content:"> ";}
+  #status.err,#rStatus.err{color:var(--danger);}
+  #status.ok,#rStatus.ok{color:var(--green);}
+  .swatches{display:flex; gap:14px; margin-top:8px; flex-wrap:wrap; align-items:center;}
+  .swgrp{display:flex; align-items:center; gap:6px; font-family:var(--flabel); font-size:10px; color:var(--dim); letter-spacing:1px;}
+  .sw{position:relative; width:24px; height:24px; border:1px solid var(--line); display:inline-block; cursor:pointer;}
+  .sw input{position:absolute; inset:0; opacity:0; width:100%; height:100%; cursor:pointer;}
+  .eyebtn{padding:2px 7px; font-size:13px; line-height:1.4; background:transparent; color:var(--dim); border:1px solid var(--line);}
+  .eyebtn:hover{color:var(--green); border-color:var(--green); background:transparent;}
+  .style-group{margin-bottom:28px;}
+  .style-group > .gtitle{margin-bottom:10px; font-family:var(--flabel); font-size:14px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;}
+  .style-group > .gtitle::before{content:"■ "; color:var(--green);}
+  .preview-card{background:var(--panel); border:1px solid var(--line); padding:14px; margin-bottom:16px;}
+  .preview-card .bar{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+  .preview-card .bar b{font-family:var(--flabel); font-size:12px; letter-spacing:1px; text-transform:uppercase;}
+  .preview-card .bar span{color:var(--dim); font-size:11px; font-family:var(--flabel); margin-left:8px;}
+  .preview-card canvas{width:100%; height:auto; display:block; background:#fff; border:1px solid var(--line);}
+  #previews .placeholder{color:var(--dim); font-size:12.5px; padding:56px 0; text-align:center; border:1px dashed var(--line);}
+  /* V4.1 columned gallery: style groups flow into 2 columns so 10 styles are scannable */
+  #previewGrid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; align-items:start;}
+  @media (max-width:1450px){ #previewGrid{grid-template-columns:1fr;} }
+  #previewGrid .style-group{margin-bottom:0;}
+  #previewGrid .preview-card{padding:10px; margin-bottom:12px;}
+  #barbar{display:flex; gap:10px; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap;}
+  #styleFilter{display:flex; gap:6px; flex-wrap:wrap;}
+  #styleFilter button{padding:5px 9px; font-size:10px; background:transparent; color:var(--dim); border:1px solid var(--line);}
+  #styleFilter button.on{background:var(--green); color:#000; border-color:var(--green);}
+  #dlallbar{display:flex; justify-content:flex-end; margin-bottom:16px;}
+  select{width:100%; background:var(--panel2); border:1px solid var(--line); color:var(--text); padding:9px 11px; font-size:13px; font-family:var(--fmono);}
+  select:focus{outline:2px solid var(--green); outline-offset:1px;}
+  .ccdesc{font-family:var(--flabel); font-size:10.5px; color:var(--dim); margin-top:6px; letter-spacing:.3px; line-height:1.5;}
+  .ifLnk.active{background:var(--green); color:#000; border-color:var(--green);}
+  .spin{display:inline-block; width:11px; height:11px; border:2px solid rgba(0,0,0,.35); border-top-color:#000; animation:sp .7s linear infinite; vertical-align:-1px; margin-right:7px;}
+  button:hover .spin{border-color:rgba(55,247,18,.35); border-top-color:var(--green);}
+  @keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<header>
+  <h1>IZhang Aviation — Infographic Maker <span style="color:var(--green)">V5.7</span></h1>
+  <a href="/" style="color:var(--blue);font-size:11px;text-decoration:none;flex:0 0 auto">← Mission Control</a>
+  <button id="btnLog" class="ghost" type="button" style="flex:0 0 auto;padding:6px 12px;font-size:11px">Changelog</button>
+</header>
+<div id="logModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:50">
+  <div class="card" style="max-width:600px;margin:70px auto;padding:22px">
+    <h2>Changelog 更新日志</h2>
+    <div style="font-family:var(--flabel);font-size:12px;line-height:2.1;color:var(--text)">
+      <span style="color:var(--green)">V5.6</span> — WeCom flow is now button-driven: the opening questions (fictional? · ground shadow? · drop shadow?) arrive as ONE combined card with the registration editable by typing; every yes/no prompt in both flows is a tappable card (free text still works); Bing reference images now publish to a mobile page with one-tap SAVE ALL into your Photos (email still sent in the background, non-blocking); DeepSeek balance reads the funded currency (CNY); the idle prompt is a command card<br>
+      <span style="color:var(--green)">V5.5</span> — Airframe auto-fetch from airfleets.net (⤓ button on the manual generator + automatic in the WeCom bot; Planespotters stays as the manual backup button); WeCom gets tappable buttons — a persistent menu (Real / Fictional / Check status / Kill) plus in-message Yes/No cards, with free-text still accepted; new "kill" command discards the current job and rolls the entry back to its pre-job state; "check status" reports queue / published / discarded / fictional counts + BG-removal quota + DeepSeek balance; brew gallery now shows the article title &amp; body in copyable boxes (dodges WeCom's length cap); article body no longer repeats the title; DeepSeek balance shown on the dashboard; Bing-image email hardened with reconnect-retry; article prompt gains a strong 去AI味 ruleset<br>
+      <span style="color:var(--green)">V5.4</span> — Layout collision fixes: status chips (VIRTUAL LIVERY / Parked) now always draw above the aircraft with an opaque plate on outline styles; long registrations shrink to clear the datasheet chip; deep airframes scale to fit the datasheet hero band instead of spilling into the facts; Mission Control landing is a fixed quarter-tile grid with a live bg-removal quota readout; Brew Gallery: style name + number outside the frame, per-style SAVE and SAVE ALL straight to the phone photo gallery; bot auto-fetches planespotters airframe data (manual paste stays as fallback)<br>
+      <span style="color:var(--green)">V5.3</span> — Licensing correctness: virtual-livery posters now keep the IFC source attribution line (CC-BY requires it) and brew renders inherit the record's licence (SA sources stay CC-BY-NC-SA instead of defaulting to ND); fa flow gains an optional aircraft-type question so DeepSeek can't mislabel the drawing; bot conversations survive restarts; /articles paginates (250 + load-more); old brew folders auto-pruned (keep 10)<br>
+      <span style="color:var(--green)">V5.2</span> — Server-side infographic rendering: headless Chromium drives the real generator (?brew mode) and uploads all 20 images in strict poster→datasheet order; mobile /brew gallery with numbered styles (reply the number in WeCom to receive that set full-res); Bing reference images now arrive by email (izhangfly@163.com → outlook) with a WeCom notification; planespotters photo leg retired; background detection upgraded — finds floating words/decals outside the aircraft silhouette on transparent images (under-fuselage shadows tolerated) and routes them through removal<br>
+      <span style="color:var(--green)">V5.1</span> — WeCom bot fictional flow: 'article' now asks "Is this livery fictional?" first (yes = tag fictional + discard its article); new 'fa' / 'fictional article' command walks the fictional queue (shadows → reg → airline → DeepSeek fictional mode → 10-poster brew, no datasheets, no article); article delivery fixed for WeCom's 2048-byte text cap (byte-aware chunking, no more mid-sentence cutoffs); manual screener (local tracker) gains Delete-photo and "real airline, fictional livery" verdicts<br>
+      <span style="color:var(--green)">V5.0</span> — Mission Control: landing dashboard at / with four tiles (Aircraft workbench · Rocket workbench · Publish Next · Article Tracker); the generator now lives at /aircraft and /rocket deep-links straight into rocket mode; /articles is a live tracker over the livery-pipeline database (Queueing / Published / Discarded with autolocate to the next queued entry; clicking a thumbnail loads that image into the generator); /publish presents the next queued article with separate copy-title / copy-body buttons; WeCom publishing bot online<br>
+      <span style="color:var(--green)">V4.7</span> — Background removal reworked: rim-based detection identifies whether an upload has a background (samples its edges) and reacts accordingly — for both aircraft &amp; rocket. Spinner words cycle every 2s and clear when the image returns. A prominent dashboard banner now appears if the removal credits run out<br>
+      <span style="color:var(--green)">V4.6</span> — Boarding Pass banner: airline name centred between the logo and BOARDING PASS, GATE STUB vertically centred. Gate stub reworked into a larger two-column layout with SEAT &amp; GATE as oversized key info<br>
+      <span style="color:var(--green)">V4.5</span> — Fix: the Boarding Pass disappeared for any aircraft whose data had no boarding_pass block (a signed bit-shift produced a negative airport index and threw). Reworked to use the seeded RNG; the build loop is now resilient so one failing style can't hide the others<br>
+      <span style="color:var(--green)">V4.4</span> — Boarding Pass polish: lighter card, wider banner with a full-height BOARDING PASS wordmark (English-only), much larger text, hero-sized aircraft, oversized SEAT &amp; ZONE, gate stub reworked (city / airport-code fields, filled out, no barcode), passenger reads MR IZHANG FLY, updated barcode image<br>
+      <span style="color:var(--green)">V4.3</span> — Boarding Pass rebuilt as a real ticket: header bar, passenger, FROM→TO route, flight/date, aircraft hero, boarding/gate/seat/zone/seq strip, a real scanned barcode + ATB text line, and a tear-off gate stub with a dashed perforation. DeepSeek now supplies a separate boarding_pass block (real route, economy fare, flight no., times, fare basis); PNR/ticket/seq are random<br>
+      <span style="color:var(--green)">V4.2</span> — Tail-region magnifier (live-updates while sharpening); Card 1 reorganised (sharpen + registration left, magnifier right); aircraft drop-shadow / rim glow (width · transparency · amount, on by default); removed the airframe-status capsule from all posters; moved the Bauhaus logo &amp; Boarding-Pass registration off the tail; lifted the Terminal footer off its border<br>
+      <span style="color:var(--green)">V4.1</span> — Auto-uppercase registration; full-resolution upload preview; bigger aircraft on the new-style posters; reworked Broadsheet (no ghost, lower title), more technical Blueprint, larger Bauhaus; replaced Swiss with Synthwave · Terminal · Boarding-Pass (10 styles total); columned preview gallery<br>
+      <span style="color:var(--green)">V4.0</span> — Client-customization panel (editable/deletable texts, per-item toggles, custom logo); editable background registration text with system fonts; aircraft background-removal, sharpening &amp; ground shadow; fictional data for virtual liveries; four new design styles (Broadsheet · Blueprint · Bauhaus · Swiss)<br>
+      <span style="color:var(--green)">V3.0</span> — Adopted Creative Commons licensing; separate detail handling for Aircraft &amp; Rocket<br>
+      V2.3 — Rocket size slider on the data sheet; custom data-sheet ratio for both aircraft and rocket<br>
+      V2.2 — Added Wikipedia search function<br>
+      V2.1 — Background removal via the image-upscaling.net API service<br>
+      <span style="color:var(--green)">V2.0</span> — Added Rocket infographic generator<br>
+      V1.2 — Added "limit data sheet to 9:16"<br>
+      V1.1 — Added 3 other styles to choose from<br>
+      <span style="color:var(--green)">V1.0</span> — Aircraft infographic generator with one style
+    </div>
+    <div class="row" style="margin-top:16px"><button id="btnLogClose" type="button">Close</button></div>
+  </div>
+</div>
+<div id="creditBanner" style="display:none;background:var(--danger);color:#fff;padding:14px 32px;font-family:var(--flabel);font-size:13px;font-weight:700;letter-spacing:.4px;line-height:1.5;align-items:center;gap:16px;justify-content:space-between">
+  <span>⚠ BACKGROUND-REMOVAL CREDITS EXHAUSTED — the image-upscaling.net quota is used up, so photos with a background can't be cut out right now. Top up at image-upscaling.net. (Already-transparent PNGs still work.)</span>
+  <button id="creditClose" type="button" style="flex:0 0 auto;background:#fff;color:var(--danger);border-color:#fff;padding:6px 12px">Dismiss</button>
+</div>
+<main>
+  <div>
+  <div class="step" id="viewAircraft">
+    <button id="goRocket" class="ghost" type="button">Rockets 火箭 →</button>
+    <div class="card">
+      <h2>1 · Aircraft image & registration</h2>
+      <div id="dropzone">Drop the side-profile PNG here, click to choose, or paste (&#8984;V)<br>
+        <div class="row" style="margin-top:10px;max-width:340px;margin-left:auto;margin-right:auto">
+          <button id="btnBrowse" class="ghost" type="button">Choose file</button>
+          <button id="btnPaste" class="ghost" type="button">Paste clipboard</button>
+        </div>
+        <img id="thumb" alt=""></div>
+      <input type="file" id="file" accept="image/png,image/webp,image/jpeg" style="display:none">
+      <div class="swatches" id="swatches"></div>
+      <div id="acPrep" style="display:flex;gap:12px;margin-top:12px;align-items:stretch">
+        <div style="flex:0 0 33%;min-width:0;display:flex;flex-direction:column;gap:9px">
+          <div id="acSharpen" style="display:none;flex-direction:column;gap:7px">
+            <div><label>Sharpen 锐化 <span id="acShAmtV">0</span>%</label>
+              <input type="range" id="acShAmt" min="0" max="200" value="0" style="width:100%;accent-color:var(--green)"></div>
+            <div><label>Radius <span id="acShRadV">2</span>px</label>
+              <input type="range" id="acShRad" min="1" max="7" value="2" style="width:100%;accent-color:var(--green)"></div>
+            <div><label>Threshold <span id="acShThV">0</span></label>
+              <input type="range" id="acShTh" min="0" max="40" value="0" style="width:100%;accent-color:var(--green)"></div>
+          </div>
+          <div>
+            <label>Registration 注册号</label>
+            <input type="text" id="reg" placeholder="e.g. AP-BOI" autocomplete="off" spellcheck="false" style="text-transform:uppercase">
+          </div>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div class="row" style="align-items:center;justify-content:space-between">
+            <label style="margin:0">Tail magnifier 尾部放大镜</label>
+            <button id="magFlip" class="eyebtn" type="button" title="Flip to the other end 切换机头/机尾">⇄</button>
+          </div>
+          <canvas id="magCanvas" style="width:100%;height:auto;background:var(--panel2);border:1px solid var(--line);display:block;margin-top:6px"></canvas>
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <label>CC license 授权协议</label>
+        <select id="ccSel" data-desc="ccDesc"><option>CC0 1.0</option><option>CC-BY 4.0</option><option>CC-BY-SA 4.0</option><option>CC-BY-ND 4.0</option><option>CC-BY-NC 4.0</option><option>CC-BY-NC-SA 4.0</option><option selected>CC-BY-NC-ND 4.0</option></select>
+        <div id="ccDesc" class="ccdesc"></div>
+      </div>
+      <div style="margin-top:12px">
+        <label style="display:flex;align-items:center;gap:9px;cursor:pointer;color:var(--text);text-transform:none;font-size:12.5px">
+          <input type="checkbox" id="ifComm" style="width:15px;height:15px;accent-color:var(--green)">
+          IFC
+        </label>
+      </div>
+      <div id="ifFields" style="display:none;margin-top:10px">
+        <label>Author 作者</label>
+        <input type="text" id="ifAuthor" placeholder="e.g. Luchino_Bruttomesso" spellcheck="false">
+        <div class="row" style="margin-top:8px">
+          <button class="ghost ifPre" type="button">Luchino_Bruttomesso</button>
+          <button class="ghost ifPre" type="button">pom</button>
+        </div>
+        <div class="ccdesc" style="margin-top:8px">Link: community.infiniteflight.com</div>
+      </div>
+      <div style="margin-top:14px">
+        <label style="display:flex;align-items:center;gap:9px;cursor:pointer;color:var(--text);text-transform:none;font-size:12.5px">
+          <input type="checkbox" id="virtual" style="width:15px;height:15px;accent-color:var(--green)">
+          Virtual livery 虚拟涂装 — poster only
+        </label>
+      </div>
+      <div id="virtualFields" style="display:none;margin-top:12px">
+        <label>Title / fictional airline 标题</label>
+        <input type="text" id="vTitle" placeholder="e.g. IZhang Cargo" spellcheck="false">
+        <div class="row" style="margin-top:10px">
+          <div><label>Aircraft type (EN)</label><input type="text" id="vType" placeholder="Boeing 757-200F" spellcheck="false"></div>
+          <div><label>机型（中文）</label><input type="text" id="vTypeCn" placeholder="波音757-200货机"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>2 · Airframe data</h2>
+      <div class="row" style="margin-bottom:10px">
+        <button id="btnAF" type="button">⤓ Auto-fetch (airfleets)</button>
+        <button id="btnPS" class="ghost" type="button">Planespotters search ↗</button>
+        <span id="afStatus" style="font-size:11px;color:var(--dim);align-self:center"></span>
+      </div>
+      <textarea id="raw" rows="9" placeholder="Auto-fetch from airfleets with the reg above, or paste the airframe page text (plus any news paragraphs) here&#10;&#10;AP-BOI K2 AIRWAYS BOEING 737-4M0(BDSF)&#10;Manufacturer Serial Number (MSN) 29210 ..."></textarea>
+      <div class="row" style="margin-top:12px">
+        <button id="btnSynth">Synthesize with DeepSeek</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>3 · Review data (editable)</h2>
+      <textarea id="json" rows="13" placeholder="Structured JSON appears here after synthesis — edit before rendering, or paste your own."></textarea>
+      <div class="row" style="margin-top:12px">
+        <button id="btnRender">Build infographics</button>
+      </div>
+      <div style="margin-top:12px">
+        <label>Custom data-sheet ratio 自定比例 — blank: height follows content</label>
+        <div class="row" style="max-width:220px">
+          <input type="text" id="ratW" placeholder="W" style="text-align:center" inputmode="decimal">
+          <span style="flex:0 0 auto;color:var(--dim)">:</span>
+          <input type="text" id="ratH" placeholder="H" style="text-align:center" inputmode="decimal">
+        </div>
+      </div>
+      <div style="margin-top:14px">
+        <label style="display:flex;align-items:center;gap:9px;cursor:pointer;color:var(--text);text-transform:none;font-size:12.5px">
+          <input type="checkbox" id="acRim" checked style="width:15px;height:15px;accent-color:var(--green)">
+          Aircraft drop shadow 机身投影 — soft glow around the rim (default on)
+        </label>
+        <div class="row" style="margin-top:8px">
+          <div><label>Width <span id="acRimWV">16</span></label>
+            <input type="range" id="acRimW" min="0" max="90" value="16" style="width:100%;accent-color:var(--green)"></div>
+          <div><label>Transparency <span id="acRimOV">28</span>%</label>
+            <input type="range" id="acRimO" min="0" max="90" value="28" style="width:100%;accent-color:var(--green)"></div>
+          <div><label>Amount <span id="acRimAV">1</span></label>
+            <input type="range" id="acRimA" min="1" max="5" value="1" style="width:100%;accent-color:var(--green)"></div>
+        </div>
+      </div>
+      <div style="margin-top:14px">
+        <label style="display:flex;align-items:center;gap:9px;cursor:pointer;color:var(--text);text-transform:none;font-size:12.5px">
+          <input type="checkbox" id="acShadow" style="width:15px;height:15px;accent-color:var(--green)">
+          Ground shadow 地面阴影 — default off
+        </label>
+      </div>
+      <div style="margin-top:14px">
+        <label style="display:flex;align-items:center;gap:9px;cursor:pointer;color:var(--text);text-transform:none;font-size:12.5px">
+          <input type="checkbox" id="gpOn" style="width:15px;height:15px;accent-color:var(--green)">
+          Edit background registration — Poster 海报大字
+        </label>
+        <div id="gpBody" style="display:none;margin-top:10px"></div>
+      </div>
+      <div style="margin-top:12px">
+        <label style="display:flex;align-items:center;gap:9px;cursor:pointer;color:var(--text);text-transform:none;font-size:12.5px">
+          <input type="checkbox" id="gsOn" style="width:15px;height:15px;accent-color:var(--green)">
+          Edit background registration — Data sheet 图表大字
+        </label>
+        <div id="gsBody" style="display:none;margin-top:10px"></div>
+      </div>
+      <div style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px">
+        <label style="display:flex;align-items:center;gap:9px;cursor:pointer;color:var(--text);text-transform:none;font-size:12.5px">
+          <input type="checkbox" id="acCustOn" style="width:15px;height:15px;accent-color:var(--green)">
+          Client customization 客制化定制
+        </label>
+        <div id="acCustBody" style="display:none;margin-top:12px"></div>
+      </div>
+      <div id="status" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <div class="step" id="viewRocket" style="display:none">
+    <button id="goAircraft" class="ghost" type="button">← Aircraft 飞机</button>
+    <div class="card">
+      <h2>R1 · Rocket image & name</h2>
+      <div id="rDropzone">Drop the rocket image here (any background — AI removal), click, or paste<br>
+        <div class="row" style="margin-top:10px;max-width:340px;margin-left:auto;margin-right:auto">
+          <button id="rBrowse" class="ghost" type="button">Choose file</button>
+          <button id="rPasteBtn" class="ghost" type="button">Paste clipboard</button>
+        </div>
+        <img id="rThumb" alt=""></div>
+      <input type="file" id="rFile" accept="image/*" style="display:none">
+      <div class="swatches" id="rSwatches"></div>
+      <div style="margin-top:14px">
+        <label>Rocket name 火箭名称</label>
+        <input type="text" id="rName" placeholder="e.g. Long March 10B" spellcheck="false">
+      </div>
+      <div style="margin-top:12px">
+        <label>CC citation 引用信息</label>
+        <input type="text" id="rLicense" placeholder="e.g. By Shujianyang - Own work, CC BY-SA 4.0, https://commons.wikimedia.org/..." spellcheck="false">
+      </div>
+      <div style="margin-top:12px">
+        <label>CC license 授权协议</label>
+        <select id="rCcSel" data-desc="rCcDesc"><option>CC0 1.0</option><option>CC-BY 4.0</option><option>CC-BY-SA 4.0</option><option>CC-BY-ND 4.0</option><option>CC-BY-NC 4.0</option><option>CC-BY-NC-SA 4.0</option><option selected>CC-BY-NC-ND 4.0</option></select>
+        <div id="rCcDesc" class="ccdesc"></div>
+      </div>
+      <div id="rSharpen" style="display:none;margin-top:12px">
+        <label>Sharpen 锐化 · amount <span id="shAmtV">0</span>%</label>
+        <input type="range" id="shAmt" min="0" max="200" value="0" style="width:100%;accent-color:var(--green)">
+        <div class="row" style="margin-top:8px">
+          <div><label>Radius <span id="shRadV">2</span>px</label>
+            <input type="range" id="shRad" min="1" max="7" value="2" style="width:100%;accent-color:var(--green)"></div>
+          <div><label>Threshold <span id="shThV">0</span></label>
+            <input type="range" id="shTh" min="0" max="40" value="0" style="width:100%;accent-color:var(--green)"></div>
+        </div>
+      </div>
+      <div style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px">
+        <label style="display:flex;align-items:center;gap:9px;cursor:pointer;color:var(--text);text-transform:none;font-size:12.5px">
+          <input type="checkbox" id="rkCustOn" style="width:15px;height:15px;accent-color:var(--green)">
+          Client customization 客制化定制
+        </label>
+        <div id="rkCustBody" style="display:none;margin-top:12px"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>R2 · Source data</h2>
+      <textarea id="rRaw" rows="9" placeholder="Paste the rocket's spec text here (Wikipedia infobox etc.)&#10;&#10;Long March 10B&#10;Function  Medium-lift launch vehicle ..."></textarea>
+      <div class="row" style="margin-top:12px">
+        <button id="rSynth">Synthesize with DeepSeek</button>
+        <button id="rWiki" class="ghost" type="button">Wikipedia search ↗</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>R3 · Review data (editable)</h2>
+      <textarea id="rJson" rows="13" placeholder="Structured JSON appears here after synthesis — edit before rendering, or paste your own."></textarea>
+      <div class="row" style="margin-top:12px">
+        <button id="rBuild">Build rocket infographics</button>
+      </div>
+      <div style="margin-top:12px">
+        <label>Rocket size on data sheet · <span id="rScaleV">96</span>%</label>
+        <input type="range" id="rScale" min="40" max="100" value="96" style="width:100%;accent-color:var(--green)">
+      </div>
+      <div style="margin-top:12px">
+        <label>Custom data-sheet ratio 自定比例 — blank: follows content</label>
+        <div class="row" style="max-width:220px">
+          <input type="text" id="rRatW" placeholder="W" style="text-align:center" inputmode="decimal">
+          <span style="flex:0 0 auto;color:var(--dim)">:</span>
+          <input type="text" id="rRatH" placeholder="H" style="text-align:center" inputmode="decimal">
+        </div>
+      </div>
+      <div id="rStatus" style="margin-top:10px"></div>
+    </div>
+  </div>
+  </div>
+
+  <div id="previews">
+    <div class="placeholder">Previews appear here — 10 styles: Classic · Dithered · Retro-Tech · Editorial · Broadsheet · Blueprint · Bauhaus · Synthwave · Terminal · Boarding Pass</div>
+  </div>
+</main>
+
+<script>
+/* ================= configuration ================= */
+const WATERMARK = "本图专供 IZhang航空制图库 微信公众号";
+const FALLBACK_ACCENT = {r:0x2f, g:0x50, b:0x7a};
+const SANS = `-apple-system, "Helvetica Neue", "Segoe UI", Arial, sans-serif`;
+const CN_SANS = `"PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif`;
+
+/* ================= tiny utils ================= */
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function rgbHex(c){return "#"+[c.r,c.g,c.b].map(v=>Math.round(clamp(v,0,255)).toString(16).padStart(2,"0")).join("");}
+function mix(a,b,t){return {r:a.r+(b.r-a.r)*t, g:a.g+(b.g-a.g)*t, b:a.b+(b.b-a.b)*t};}
+function lum(c){const f=v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)};return .2126*f(c.r)+.7152*f(c.g)+.0722*f(c.b);}
+function contrast(a,b){const l1=lum(a),l2=lum(b);return (Math.max(l1,l2)+.05)/(Math.min(l1,l2)+.05);}
+function darkenFor(c,bgc,minC){let out={...c},i=0;while(contrast(out,bgc)<minC && i<26){out=mix(out,{r:8,g:10,b:14},.12);i++;}return out;}
+function lightenFor(c,bgc,minC){let out={...c},i=0;while(contrast(out,bgc)<minC && i<26){out=mix(out,{r:246,g:249,b:253},.12);i++;}return out;}
+function rgba(c,a){return `rgba(${Math.round(c.r)},${Math.round(c.g)},${Math.round(c.b)},${a})`;}
+function satOf(r,g,b){const mx=Math.max(r,g,b);return mx===0?0:(mx-Math.min(r,g,b))/mx;}
+function hueOf(r,g,b){const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;if(!d)return 0;let h;if(mx===r)h=((g-b)/d)%6;else if(mx===g)h=(b-r)/d+2;else h=(r-g)/d+4;return ((h*60)+360)%360;}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
+
+/* ================= image analysis ================= */
+let AIRCRAFT = null;
+
+function analyzeImage(img){
+  const nW=img.naturalWidth||img.width, nH=img.naturalHeight||img.height;
+  const W = 720, H = Math.max(1, Math.round(nH * W / nW));
+  const cv = document.createElement("canvas"); cv.width=W; cv.height=H;
+  const cx = cv.getContext("2d", {willReadFrequently:true});
+  cx.drawImage(img, 0, 0, W, H);
+  const d = cx.getImageData(0,0,W,H).data;
+  let x0=W, x1=0, y0=H, y1=0;
+  const BINS=24, w8=new Float64Array(BINS), rs=new Float64Array(BINS), gs=new Float64Array(BINS), bs=new Float64Array(BINS);
+  for(let y=0;y<H;y++) for(let x=0;x<W;x++){
+    const i=(y*W+x)*4, a=d[i+3];
+    if(a>25){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
+    if(a>200){
+      const r=d[i],g=d[i+1],b=d[i+2], s=satOf(r,g,b), v=Math.max(r,g,b)/255;
+      if(s>0.32 && v>0.25){
+        const bin=Math.floor(hueOf(r,g,b)/360*BINS)%BINS, wgt=s*v;
+        w8[bin]+=wgt; rs[bin]+=r*wgt; gs[bin]+=g*wgt; bs[bin]+=b*wgt;
+      }
+    }
+  }
+  if(x1<=x0){x0=0;x1=W-1;y0=0;y1=H-1;}
+  const order=[...w8.keys()].sort((p,q)=>w8[q]-w8[p]);
+  const total=w8.reduce((s,v)=>s+v,0);
+  let accent=FALLBACK_ACCENT, accent2=null;
+  if(total > W*H*0.0006){
+    const t=order[0];
+    accent={r:rs[t]/w8[t], g:gs[t]/w8[t], b:bs[t]/w8[t]};
+    for(const o of order.slice(1)){
+      const dist=Math.min(Math.abs(o-t), BINS-Math.abs(o-t));
+      if(dist>=4 && w8[o]>w8[t]*0.22){ accent2={r:rs[o]/w8[o], g:gs[o]/w8[o], b:bs[o]/w8[o]}; break; }
+    }
+  }
+  if(!accent2) accent2=mix(accent,{r:20,g:26,b:36},.45);
+  const sc = nW / W;
+  return {
+    img, w: nW, h: nH,
+    bx0: x0*sc, by0: y0*sc, bw: (x1-x0+1)*sc, bh: (y1-y0+1)*sc,
+    accent, accent2
+  };
+}
+
+/* ================= styles ================= */
+function mkFont(stack){return (wt,px)=>`${wt} ${px}px ${stack}`;}
+
+const STYLES=[
+  { id:"classic", label:"Classic", labelCN:"经典",
+    mode:"light", en:SANS, disp:SANS, cn:CN_SANS },
+  { id:"modern", label:"Dithered", labelCN:"点阵",
+    mode:"dither", en:SANS,
+    disp:`"Space Grotesk","Futura","Helvetica Neue",Arial,sans-serif`,
+    mono:`"IBM Plex Mono","JetBrains Mono","Menlo","Courier New",monospace`,
+    cn:CN_SANS },
+  { id:"retro", label:"Retro-Tech", labelCN:"复古科幻",
+    mode:"scifi", en:`"Space Mono","Courier New",monospace`,
+    disp:`"Space Mono","Courier New",monospace`,
+    cn:CN_SANS },
+  { id:"editorial", label:"Editorial", labelCN:"杂志风",
+    mode:"ivory", en:`"Georgia","Times New Roman",serif`,
+    disp:`"Didot","Bodoni 72","Georgia",serif`,
+    cn:`"Songti SC","STSong","PingFang SC",serif`, chipOutline:true },
+  /* ---- V4.0: four new designs, each with its own poster layout (pl) ---- */
+  { id:"broadsheet", label:"Broadsheet", labelCN:"报章", mode:"paper", pl:"masthead",
+    en:`"Georgia","Times New Roman",serif`,
+    disp:`"Playfair Display","Didot","Georgia",serif`,
+    cn:`"Songti SC","STSong",serif`, mono:`"IBM Plex Mono","JetBrains Mono",monospace`,
+    chipOutline:true },
+  { id:"blueprint", label:"Blueprint", labelCN:"蓝图", mode:"blueprint", pl:"blueprint",
+    en:`"JetBrains Mono","Menlo",monospace`, disp:`"JetBrains Mono","Menlo",monospace`,
+    mono:`"JetBrains Mono","Menlo",monospace`, cn:CN_SANS },
+  { id:"bauhaus", label:"Bauhaus", labelCN:"包豪斯", mode:"bauhaus", pl:"blocks",
+    en:`"Futura","Century Gothic","Helvetica Neue",Arial,sans-serif`,
+    disp:`"Futura","Century Gothic","Helvetica Neue",Arial,sans-serif`, cn:CN_SANS },
+  { id:"neon", label:"Synthwave", labelCN:"霓虹", mode:"neon", pl:"neon",
+    en:`"Helvetica Neue","Arial",sans-serif`,
+    disp:`"Orbitron","Bank Gothic","Helvetica Neue",Arial,sans-serif`,
+    mono:`"JetBrains Mono","Menlo",monospace`, cn:CN_SANS },
+  { id:"terminal", label:"Terminal", labelCN:"终端", mode:"terminal", pl:"terminal",
+    en:`"JetBrains Mono","Menlo",monospace`, disp:`"JetBrains Mono","Menlo",monospace`,
+    mono:`"JetBrains Mono","Menlo",monospace`, cn:CN_SANS },
+  { id:"kraft", label:"Boarding Pass", labelCN:"登机牌", mode:"kraft", pl:"ticket",
+    en:`"Helvetica Neue","Arial",sans-serif`,
+    disp:`"Futura","Helvetica Neue",Arial,sans-serif`,
+    mono:`"JetBrains Mono","Menlo",monospace`, cn:CN_SANS },
+];
+STYLES.forEach(S=>{S.fe=mkFont(S.en); S.fd=mkFont(S.disp||S.en); S.fc=mkFont(S.cn); S.fl=mkFont(S.mono||S.en);
+  S.dark = (S.mode==="scifi"||S.mode==="blueprint"||S.mode==="neon"||S.mode==="terminal");
+  S.radius = (S.mode==="light") ? 10 : 0.01;});
+
+function makePalette(A,S){
+  const acc=A.accent;
+  const white={r:250,g:251,b:253}, black={r:14,g:17,b:22};
+  let bgC,bg2C,inkC,cnC,accDC,deepC,lineS,dimC,wmC,ghostA;
+  if(S.mode==="dither"){
+    bgC   = {r:255,g:255,b:255};
+    bg2C  = mix(acc,{r:244,g:245,b:247},.95);
+    inkC  = mix(acc,{r:17,g:24,b:39},.86);
+    cnC   = darkenFor(mix(acc,{r:75,g:85,b:99},.5), bgC, 4.6);
+    accDC = darkenFor(acc, bgC, 4.2);
+    deepC = {r:17,g:19,b:24};
+    lineS = rgbHex(mix(acc,{r:227,g:229,b:233},.85));
+    dimC  = mix(acc,{r:125,g:133,b:144},.7);
+    wmC   = mix(mix(acc,{r:128,g:128,b:128},.85),white,.42);
+    ghostA=.12;
+  }else if(S.mode==="scifi"){ // retro-futurism: deep space, glowing accents
+    bgC   = mix(acc,{r:9,g:12,b:22},.90);
+    bg2C  = mix(acc,{r:17,g:21,b:35},.86);
+    inkC  = lightenFor(mix(acc,{r:230,g:236,b:246},.85), bgC, 9);
+    cnC   = lightenFor(mix(acc,{r:168,g:178,b:196},.55), bgC, 4.6);
+    accDC = lightenFor(acc, bgC, 4.4);
+    deepC = {r:5,g:7,b:13};
+    lineS = "rgba(185,200,255,.17)";
+    dimC  = mix(acc,{r:148,g:158,b:178},.6);
+    wmC   = mix(bgC,{r:160,g:162,b:172},.36);
+    ghostA=.17;
+  }else if(S.mode==="ivory"){
+    bgC   = mix(acc,{r:250,g:249,b:246},.97);
+    bg2C  = mix(acc,{r:243,g:241,b:236},.95);
+    inkC  = {r:22,g:24,b:28};
+    cnC   = darkenFor(mix(acc,{r:96,g:100,b:108},.55), bgC, 4.6);
+    accDC = darkenFor(acc, bgC, 4.2);
+    deepC = {r:16,g:18,b:22};
+    lineS = rgbHex(mix(acc,{r:224,g:222,b:216},.8));
+    dimC  = mix(acc,{r:140,g:142,b:148},.7);
+    wmC   = mix(mix(acc,{r:128,g:128,b:128},.85),{r:230,g:229,b:225},.45);
+    ghostA=.15;
+  }else if(S.mode==="paper"){ // broadsheet: warm newsprint, ink accent
+    bgC   = mix(acc,{r:245,g:242,b:233},.95);
+    bg2C  = mix(acc,{r:236,g:232,b:222},.93);
+    inkC  = {r:26,g:24,b:22};
+    cnC   = darkenFor(mix(acc,{r:80,g:74,b:70},.5), bgC, 4.6);
+    accDC = darkenFor(acc, bgC, 4.6);
+    deepC = {r:26,g:24,b:22};
+    lineS = rgbHex(mix(acc,{r:206,g:200,b:189},.7));
+    dimC  = mix(acc,{r:120,g:114,b:106},.7);
+    wmC   = mix(mix(acc,{r:128,g:128,b:128},.85),{r:236,g:232,b:222},.45);
+    ghostA=.13;
+  }else if(S.mode==="blueprint"){ // technical drawing: deep blue, grid
+    bgC   = mix(acc,{r:12,g:26,b:48},.82);
+    bg2C  = mix(acc,{r:18,g:34,b:60},.8);
+    inkC  = lightenFor(mix(acc,{r:224,g:236,b:250},.82), bgC, 9);
+    cnC   = lightenFor(mix(acc,{r:172,g:198,b:232},.5), bgC, 4.6);
+    accDC = lightenFor(acc, bgC, 4.4);
+    deepC = {r:7,g:16,b:32};
+    lineS = "rgba(150,190,255,.22)";
+    dimC  = mix(acc,{r:150,g:180,b:220},.6);
+    wmC   = mix(bgC,{r:150,g:180,b:220},.34);
+    ghostA=.16;
+  }else if(S.mode==="bauhaus"){ // bold geometric, warm white
+    bgC   = {r:246,g:243,b:236};
+    bg2C  = mix(acc,{r:238,g:234,b:226},.86);
+    inkC  = {r:20,g:20,b:22};
+    cnC   = darkenFor(mix(acc,{r:60,g:60,b:66},.4), bgC, 4.6);
+    accDC = darkenFor(acc, bgC, 4.4);
+    deepC = {r:20,g:20,b:22};
+    lineS = rgbHex(mix(acc,{r:208,g:204,b:196},.5));
+    dimC  = mix(acc,{r:110,g:108,b:110},.6);
+    wmC   = mix(mix(acc,{r:128,g:128,b:128},.85),{r:238,g:234,b:226},.4);
+    ghostA=.12;
+  }else if(S.mode==="neon"){ // synthwave: deep purple-black with magenta/cyan glow
+    bgC   = mix(acc,{r:16,g:10,b:30},.85);
+    bg2C  = mix(acc,{r:28,g:14,b:48},.82);
+    inkC  = lightenFor({r:246,g:240,b:255}, bgC, 9);
+    cnC   = lightenFor(mix(acc,{r:255,g:120,b:210},.45), bgC, 4.4);
+    accDC = lightenFor(acc, bgC, 4.6);
+    deepC = {r:9,g:6,b:20};
+    lineS = "rgba(255,120,220,.30)";
+    dimC  = mix(acc,{r:205,g:150,b:235},.5);
+    wmC   = mix(bgC,{r:225,g:160,b:235},.42);
+    ghostA=.18;
+  }else if(S.mode==="terminal"){ // hacker phosphor-green on near-black
+    bgC   = {r:8,g:12,b:9};
+    bg2C  = {r:12,g:17,b:12};
+    inkC  = {r:190,g:255,b:200};
+    cnC   = {r:120,g:212,b:150};
+    accDC = lightenFor(mix(acc,{r:70,g:240,b:130},.45), bgC, 4.2);
+    deepC = {r:5,g:8,b:6};
+    lineS = "rgba(120,255,150,.22)";
+    dimC  = {r:110,g:170,b:130};
+    wmC   = mix({r:8,g:12,b:9},{r:120,g:225,b:150},.34);
+    ghostA=.16;
+  }else if(S.mode==="kraft"){ // boarding-pass on a light, clean card
+    bgC   = mix(acc,{r:245,g:245,b:243},.94);
+    bg2C  = mix(acc,{r:236,g:236,b:233},.92);
+    inkC  = {r:30,g:30,b:33};
+    cnC   = darkenFor(mix(acc,{r:78,g:78,b:82},.5), bgC, 4.6);
+    accDC = darkenFor(acc, bgC, 4.6);
+    deepC = {r:30,g:30,b:33};
+    lineS = rgbHex(mix(acc,{r:206,g:205,b:202},.55));
+    dimC  = mix(acc,{r:118,g:117,b:118},.6);
+    wmC   = mix(mix(acc,{r:126,g:125,b:124},.8),{r:236,g:236,b:233},.42);
+    ghostA=.10;
+  }else{ // light / classic
+    bgC   = mix(acc,white,.945);
+    bg2C  = mix(acc,white,.885);
+    inkC  = darkenFor(mix(acc,black,.78), bgC, 8);
+    cnC   = darkenFor(mix(acc,{r:70,g:82,b:98},.5), bgC, 4.6);
+    accDC = darkenFor(acc, bgC, 4.2);
+    deepC = darkenFor(mix(acc,black,.55), white, 9);
+    lineS = rgbHex(mix(acc,white,.78));
+    dimC  = mix(mix(acc,{r:128,g:132,b:140},.7),white,.25);
+    wmC   = mix(mix(acc,{r:128,g:128,b:128},.85),white,.42);
+    ghostA=.12;
+  }
+  const acc2DC=darkenFor(A.accent2, bgC, 3);
+  const faint=rgbHex(mix(bgC,inkC,.16)); // barely-there: deviates from the bg only slightly
+  return {acc, bg:rgbHex(bgC), bgC, bg2:rgbHex(bg2C), bg2C, ink:rgbHex(inkC),
+          cn:rgbHex(cnC), accD:rgbHex(accDC), accDC, acc2DC, deep:rgbHex(deepC),
+          line:lineS, dim:rgbHex(dimC), wm:rgbHex(wmC), ghostA, faint};
+}
+const TONES = {ok:"#2e8b57", stored:"#b07d2b", lost:"#b03040", virtual:"#6b4fb3"};
+
+/* ---- ordered-dither (Bayer 4×4) fade — the signature of the Dithered style ---- */
+const BAYER=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
+function ditherFade(ctx,x,y,w,h,color,denseAtBottom,rnd){
+  const cell=9, cols=Math.ceil(w/cell), rows=Math.ceil(h/cell), ph=Math.floor(rnd()*4);
+  ctx.fillStyle=color;
+  for(let iy=0;iy<rows;iy++){
+    const v = denseAtBottom ? (iy+1)/rows : 1-(iy)/rows;
+    for(let ix=0;ix<cols;ix++){
+      if(v > BAYER[(iy+ph)%4][(ix+ph)%4]/16 + 0.04)
+        ctx.fillRect(x+ix*cell, y+iy*cell, cell-3, cell-3);
+    }
+  }
+}
+/* ---- per-style background painters (rnd shifts patterns on every build) ---- */
+function paintBG(ctx,S,P,W,H,rnd){
+  if(S.mode==="dither"){
+    ctx.fillStyle=P.bg; ctx.fillRect(0,0,W,H);
+    if(W>H){ // poster: accent dither ground just above the facts strip
+      const bh=H*(0.16+rnd()*0.05);
+      ditherFade(ctx,0,H-248-bh,W,bh,rgba(P.accDC,.5),true,rnd);
+    }else{   // data sheet: dithered left edge strip
+      ditherFade(ctx,0,0,84,H,rgba(P.accDC,.30),true,rnd);
+    }
+    // halftone disc bursting from a corner
+    const dcx=W*(rnd()>.5?0.88:0.12), dcy=H*(W>H?0.16:0.10), dr=Math.min(W,H)*(0.24+rnd()*0.1);
+    ctx.save(); ctx.beginPath(); ctx.arc(dcx,dcy,dr,0,7); ctx.clip();
+    ditherFade(ctx,dcx-dr,dcy-dr,dr*2,dr*2,rgba(P.accDC,.30),false,rnd);
+    ctx.restore();
+    // thin ink dither line under the top edge
+    ditherFade(ctx,0,0,W,34,rgba(mix(P.accDC,{r:17,g:24,b:39},.6),.28),false,rnd);
+  }else if(S.mode==="scifi"){ // retro-futurism: starfield, orbit rings, reticles
+    ctx.fillStyle=P.bg; ctx.fillRect(0,0,W,H);
+    const gx=W*(0.2+rnd()*0.6), gy=H*(0.12+rnd()*0.5);
+    const rg=ctx.createRadialGradient(gx,gy,0,gx,gy,Math.max(W,H)*0.55);
+    rg.addColorStop(0,rgba(P.accDC,.17)); rg.addColorStop(1,rgba(P.accDC,0));
+    ctx.fillStyle=rg; ctx.fillRect(0,0,W,H);
+    for(let i=0;i<170;i++){ // starfield
+      ctx.fillStyle=`rgba(235,240,255,${(0.10+rnd()*0.5).toFixed(2)})`;
+      ctx.beginPath(); ctx.arc(rnd()*W,rnd()*H,rnd()*1.9+0.4,0,7); ctx.fill();
+    }
+    ctx.strokeStyle=rgba(P.accDC,.30); ctx.lineWidth=2.5; // orbital rings
+    for(let i=0;i<2;i++){
+      ctx.save(); ctx.translate(W*(0.25+rnd()*0.5),H*(0.25+rnd()*0.5)); ctx.rotate(rnd()*Math.PI);
+      ctx.beginPath(); ctx.ellipse(0,0,W*(0.32+rnd()*0.2),H*(0.14+rnd()*0.12),0,0,7); ctx.stroke();
+      ctx.restore();
+    }
+    ctx.strokeStyle=rgba(P.accDC,.65); ctx.lineWidth=3; // corner reticles
+    const L=52,o=38;
+    for(const [cx,cy,sx,sy] of [[o,o,1,1],[W-o,o,-1,1],[o,H-o,1,-1],[W-o,H-o,-1,-1]]){
+      ctx.beginPath(); ctx.moveTo(cx+sx*L,cy); ctx.lineTo(cx,cy); ctx.lineTo(cx,cy+sy*L); ctx.stroke();
+    }
+  }else if(S.mode==="ivory"){
+    ctx.fillStyle=P.bg; ctx.fillRect(0,0,W,H);
+    const vx=(W>H?150:120)*(0.42+rnd()*0.18);
+    ctx.strokeStyle=P.line; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(vx,0); ctx.lineTo(vx,H); ctx.stroke();
+    // oversized editorial deco circle
+    ctx.strokeStyle=rgba(P.accDC,.16); ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.arc(W*(0.72+rnd()*0.2),H*(0.2+rnd()*0.25),Math.min(W,H)*(0.3+rnd()*0.1),0,7); ctx.stroke();
+    ctx.fillStyle=P.accD; ctx.fillRect(vx-7, H*(0.12+rnd()*0.1), 14,14);
+  }else if(S.mode==="paper"){ // broadsheet: newsprint baselines + top masthead rule
+    ctx.fillStyle=P.bg; ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle=rgba(P.accDC,.05); ctx.lineWidth=1;
+    for(let yy=120+((rnd()*40)|0); yy<H; yy+=54){ctx.beginPath();ctx.moveTo(60,yy);ctx.lineTo(W-60,yy);ctx.stroke();}
+    // faint column rules
+    const cols=W>H?4:2;
+    ctx.strokeStyle=rgba(P.accDC,.06);
+    for(let i=1;i<cols;i++){const x=W*i/cols;ctx.beginPath();ctx.moveTo(x,90);ctx.lineTo(x,H-90);ctx.stroke();}
+  }else if(S.mode==="blueprint"){ // technical grid + corner reticles
+    ctx.fillStyle=P.bg; ctx.fillRect(0,0,W,H);
+    const g=64, ox=(rnd()*g)|0, oy=(rnd()*g)|0;
+    ctx.strokeStyle="rgba(150,190,255,.09)"; ctx.lineWidth=1;
+    for(let x=ox;x<=W;x+=g){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=oy;y<=H;y+=g){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    ctx.strokeStyle="rgba(150,190,255,.18)"; ctx.lineWidth=1.5;
+    for(let x=ox;x<=W;x+=g*5){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=oy;y<=H;y+=g*5){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    ctx.strokeStyle=rgba(P.accDC,.6); ctx.lineWidth=3; const L=54,o=40;
+    for(const [cx,cy,sx,sy] of [[o,o,1,1],[W-o,o,-1,1],[o,H-o,1,-1],[W-o,H-o,-1,-1]]){
+      ctx.beginPath(); ctx.moveTo(cx+sx*L,cy); ctx.lineTo(cx,cy); ctx.lineTo(cx,cy+sy*L); ctx.stroke(); }
+  }else if(S.mode==="bauhaus"){ // bold primary geometry
+    ctx.fillStyle=P.bg; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle=rgba(P.accDC,.15); ctx.beginPath(); ctx.arc(W*(0.12+rnd()*0.05),H*0.2,Math.min(W,H)*0.17,0,7); ctx.fill();
+    ctx.fillStyle=rgba(P.acc2DC||P.accDC,.13); ctx.fillRect(W*0.74,0,W*0.26,H*(0.2+rnd()*0.05));
+    ctx.fillStyle=rgba(P.accDC,.11); ctx.beginPath(); ctx.moveTo(0,H); ctx.lineTo(W*0.17,H); ctx.lineTo(0,H*0.68); ctx.closePath(); ctx.fill();
+    ctx.fillStyle=P.accD; ctx.fillRect(0,H-(W>H?16:24), W*(0.42+rnd()*0.1), (W>H?16:24));
+  }else if(S.mode==="neon"){ // synthwave: glow + sun disc + perspective grid
+    ctx.fillStyle=P.bg; ctx.fillRect(0,0,W,H);
+    const vg=ctx.createLinearGradient(0,0,0,H);
+    vg.addColorStop(0,rgba({r:255,g:60,b:180},.16)); vg.addColorStop(.5,rgba({r:120,g:40,b:200},.05)); vg.addColorStop(1,rgba({r:0,g:200,b:255},.06));
+    ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
+    const sx=W*(0.5+(rnd()-0.5)*0.1), sy=H*(0.30+rnd()*0.05), sr=Math.min(W,H)*0.27;
+    const sg=ctx.createRadialGradient(sx,sy,0,sx,sy,sr);
+    sg.addColorStop(0,rgba({r:255,g:140,b:80},.45)); sg.addColorStop(.6,rgba({r:255,g:60,b:150},.20)); sg.addColorStop(1,rgba({r:255,g:60,b:150},0));
+    ctx.fillStyle=sg; ctx.beginPath(); ctx.arc(sx,sy,sr,0,7); ctx.fill();
+    const hz=H*0.62;
+    ctx.strokeStyle=rgba({r:255,g:80,b:210},.32); ctx.lineWidth=2;
+    for(let i=-12;i<=12;i++){ ctx.beginPath(); ctx.moveTo(W/2,hz); ctx.lineTo(W/2+i*(W/12),H); ctx.stroke(); }
+    ctx.strokeStyle=rgba({r:0,g:220,b:255},.28);
+    for(let j=1;j<=12;j++){ const t=j/12, y=hz+(H-hz)*t*t; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  }else if(S.mode==="terminal"){ // hacker CRT: scanlines + frame + corner blocks
+    ctx.fillStyle=P.bg; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle="rgba(120,255,150,.045)";
+    for(let y=0;y<H;y+=5) ctx.fillRect(0,y,W,2);
+    ctx.strokeStyle="rgba(120,255,150,.05)"; ctx.lineWidth=1;
+    for(let x=0;x<=W;x+=80){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    ctx.strokeStyle="rgba(120,255,150,.5)"; ctx.lineWidth=3; ctx.strokeRect(28,28,W-56,H-56);
+    ctx.fillStyle=P.accD; for(const [cx,cy] of [[28,28],[W-28,28],[28,H-28],[W-28,H-28]]) ctx.fillRect(cx-6,cy-6,12,12);
+  }else if(S.mode==="kraft"){ // light clean card (boarding-pass poster draws its own furniture)
+    ctx.fillStyle=P.bg; ctx.fillRect(0,0,W,H);
+    for(let i=0;i<160;i++){ ctx.fillStyle=rgba({r:120,g:120,b:120},(0.012+rnd()*0.025)); ctx.fillRect(rnd()*W,rnd()*H,2,2); }
+    if(H>=W){ // data sheet only: perforation + stamp
+      ctx.strokeStyle=rgba(P.accDC,.45); ctx.lineWidth=2; ctx.setLineDash([5,10]);
+      ctx.beginPath(); ctx.moveTo(W*0.5,40); ctx.lineTo(W*0.5,H-40); ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle=rgba(P.accDC,.32); ctx.lineWidth=3; ctx.beginPath(); ctx.arc(W-150,150,66,0,7); ctx.stroke();
+    }
+  }else{ // classic
+    const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,P.bg); g.addColorStop(1,P.bg2);
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    // soft accent glow
+    const gx=W*(0.6+rnd()*0.3), gy=H*(0.15+rnd()*0.2);
+    const rg=ctx.createRadialGradient(gx,gy,0,gx,gy,Math.max(W,H)*0.45);
+    rg.addColorStop(0,rgba(P.accDC,.10)); rg.addColorStop(1,rgba(P.accDC,0));
+    ctx.fillStyle=rg; ctx.fillRect(0,0,W,H);
+    ctx.save(); ctx.strokeStyle=rgba(P.accDC,.10); ctx.lineWidth=3;
+    const flip=rnd()>.5;
+    for(let i=0;i<4;i++){
+      const y0=H*(0.13+rnd()*0.14+i*0.1), y1=H*(0.26+rnd()*0.16+i*0.09);
+      ctx.lineWidth=2+rnd()*3;
+      ctx.beginPath();
+      if(flip){ctx.moveTo(W+50,y0); ctx.quadraticCurveTo(W*0.55,H*(0.02+i*0.1+rnd()*0.06),-60,y1);}
+      else{ctx.moveTo(-50,y0); ctx.quadraticCurveTo(W*0.45,H*(0.02+i*0.1+rnd()*0.06),W+60,y1);}
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+}
+/* ghost registration: drawn right before the aircraft so its lower half hides
+   behind the fuselage while the top stays readable */
+function paintGhost(ctx,S,P,text,cx,cy,maxW,maxSize,cfg){
+  if(cfg && cfg.text!==undefined){
+    if((cfg.text||"").trim()==="") return; // custom text cleared → hide it
+    text=cfg.text;
+  }
+  if(!text) return;
+  const fam=(cfg&&cfg.font)?cfg.font:(S.disp||S.en);
+  const wt=(cfg&&cfg.bold===false)?400:900;
+  const st=(cfg&&cfg.italic)?"italic ":"";
+  const forced=!!(cfg&&cfg.size>0);
+  let size=forced?cfg.size:maxSize;
+  ctx.font=`${st}${wt} ${size}px ${fam}`;
+  const w=ctx.measureText(text).width;
+  if(!forced && w>maxW) size=Math.floor(size*maxW/w);
+  ctx.save(); ctx.textAlign="center"; ctx.font=`${st}${wt} ${size}px ${fam}`;
+  const alpha=cfg?cfg.alpha:P.ghostA;
+  if(!cfg && S.mode==="ivory"){
+    ctx.strokeStyle=rgba({r:22,g:24,b:28}, alpha);
+    ctx.lineWidth=Math.max(2.5,size*0.011);
+    ctx.strokeText(text,cx,cy);
+  }else{
+    const col=(cfg&&cfg.color)?hexToRgb(cfg.color):null;
+    ctx.fillStyle= col ? rgba(col,alpha)
+                 : (S.mode==="ivory"? rgba({r:22,g:24,b:28},alpha) : rgba(P.accDC,alpha));
+    ctx.fillText(text,cx,cy);
+  }
+  ctx.restore();
+}
+
+/* ================= canvas helpers ================= */
+function rr(ctx,x,y,w,h,r){r=Math.max(0.01,r);ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function wrap(ctx,text,maxW){
+  if(!text) return [];
+  const out=[]; let line="";
+  const hasSpace=/\s/.test(text);
+  const units=hasSpace ? text.split(/\s+/) : text.split("");
+  const joiner=hasSpace ? " " : "";
+  for(const u of units){
+    const t=line?line+joiner+u:u;
+    if(ctx.measureText(t).width>maxW && line){out.push(line); line=u;} else line=t;
+  }
+  if(line) out.push(line);
+  return out;
+}
+function ellipsize(ctx,text,maxW){
+  if(ctx.measureText(text).width<=maxW) return text;
+  while(text.length>1 && ctx.measureText(text+"…").width>maxW) text=text.slice(0,-1);
+  return text+"…";
+}
+function drawAircraft(ctx,A,dx,dy,dw,rim){
+  const s=dw/A.bw, dh=A.bh*s;
+  if(rim&&rim.on&&rim.blur>0&&rim.opacity>0){ // soft glow uniformly around the silhouette rim
+    ctx.save(); ctx.shadowColor=rim.color; ctx.shadowBlur=rim.blur; ctx.shadowOffsetX=0; ctx.shadowOffsetY=0;
+    for(let i=0;i<(rim.amount||1);i++) ctx.drawImage(A.img, A.bx0,A.by0,A.bw,A.bh, dx,dy,dw,dh);
+    ctx.restore();
+  }
+  ctx.drawImage(A.img, A.bx0, A.by0, A.bw, A.bh, dx, dy, dw, dh);
+  return dh;
+}
+function statusChip(ctx,S,P,label,rightX,topY,fontpx){
+  const tone=TONES[label.tone]||P.accD;
+  ctx.font=S.fc(600,fontpx);
+  const tw=ctx.measureText(label.text).width, h=fontpx*1.9, w=tw+fontpx*1.65;
+  const rad=S.chipOutline||S.mode==="dither"||S.mode==="scifi" ? S.radius : h/2;
+  if(S.chipOutline){
+    // opaque plate first — chips are drawn over the aircraft when the tail is
+    // tall, and an outline-only capsule would let the fuselage bleed through
+    ctx.fillStyle=P.bg; rr(ctx,rightX-w,topY,w,h,rad); ctx.fill();
+    ctx.strokeStyle=tone; ctx.lineWidth=3; rr(ctx,rightX-w,topY,w,h,rad); ctx.stroke();
+    ctx.fillStyle=tone;
+  }else{
+    ctx.fillStyle=tone; rr(ctx,rightX-w,topY,w,h,rad); ctx.fill();
+    ctx.fillStyle="#fff";
+  }
+  ctx.textAlign="center"; ctx.fillText(label.text, rightX-w/2, topY+h*0.69); ctx.textAlign="left";
+  return h;
+}
+let LOGO=null, LOGO_BOX=null, LOGO_TINTS={};
+function trimBox(img){
+  const W=300, H=Math.max(1,Math.round(img.naturalHeight*W/img.naturalWidth));
+  const c=document.createElement("canvas"); c.width=W; c.height=H;
+  const x=c.getContext("2d",{willReadFrequently:true}); x.drawImage(img,0,0,W,H);
+  const d=x.getImageData(0,0,W,H).data;
+  let x0=W,x1=0,y0=H,y1=0;
+  for(let y=0;y<H;y++)for(let xx=0;xx<W;xx++){
+    if(d[(y*W+xx)*4+3]>20){if(xx<x0)x0=xx;if(xx>x1)x1=xx;if(y<y0)y0=y;if(y>y1)y1=y;}}
+  const s=img.naturalWidth/W;
+  if(x1<=x0) return {x:0,y:0,w:img.naturalWidth,h:img.naturalHeight};
+  return {x:x0*s,y:y0*s,w:(x1-x0+1)*s,h:(y1-y0+1)*s};
+}
+function tintedLogo(color){
+  const key=color;
+  if(LOGO_TINTS[key]) return LOGO_TINTS[key];
+  const b=LOGO_BOX;
+  const c=document.createElement("canvas"); c.width=b.w; c.height=b.h;
+  const x=c.getContext("2d"); x.drawImage(LOGO,b.x,b.y,b.w,b.h,0,0,b.w,b.h);
+  x.globalCompositeOperation="source-in"; x.fillStyle=color; x.fillRect(0,0,c.width,c.height);
+  LOGO_TINTS[key]=c; return c;
+}
+function drawLogo(ctx,color,rightX,topY,h){
+  const l=tintedLogo(color), w=h*l.width/l.height;
+  ctx.drawImage(l,rightX-w,topY,w,h); return w;
+}
+
+/* ================= POSTER 2.35:1 (design 3200×1362 → 3840×1634) ================= */
+function renderLandscape(A,D,S,rnd){
+  if(S.pl) return renderLandscapeV2(A,D,S,rnd); // V4.0 styles use bespoke banner layouts
+  const W=3200,H=1362,M=140,K=1.2;
+  const P=makePalette(A,S);
+  const cv=document.createElement("canvas"); cv.width=Math.round(W*K); cv.height=Math.round(H*K);
+  const ctx=cv.getContext("2d"); ctx.scale(K,K);
+  paintBG(ctx,S,P,W,H,rnd);
+  // aircraft geometry first — the ghost text is positioned against it
+  const aspect=A.bw/A.bh;
+  const stripTop=H-238;
+  // big centered aircraft, bottom-anchored just above the strip — the nose of a
+  // left-facing profile sits low, so it clears the text block in the top-left
+  let dw=Math.min(W-300, 760*aspect), dhh=dw/aspect;
+  const dx=(W-dw)/2+(rnd()-0.5)*30;
+  const dy=stripTop-38-dhh;
+  // ghost reg: top readable above the fuselage, lower part hidden behind it
+  {const gp=D._ghostP; let gcx=dx+dw/2, gcy=dy+dhh*0.42;
+   if(gp){gcx+=(gp.px||0)*dw*0.5; gcy+=(gp.py||0)*dhh*0.6;}
+   paintGhost(ctx,S,P,D.reg||D.type_en||"", gcx, gcy, dw*1.06, 380, gp);}
+  // header (left column)
+  let y=170;
+  ctx.textAlign="left"; ctx.textBaseline="alphabetic";
+  ctx.font=S.fe(600,56); ctx.fillStyle=P.ink; ctx.fillText((D.airline_en||"").toUpperCase(), M, y);
+  ctx.font=S.fc(500,44); ctx.fillStyle=P.cn; ctx.fillText(D.airline_cn||"", M, y+58);
+  const bigLine=D.reg||D.type_en||"";
+  let bs=150; ctx.font=S.fd(800,bs);
+  if(ctx.measureText(bigLine).width>900) bs=Math.floor(bs*900/ctx.measureText(bigLine).width);
+  ctx.font=S.fd(800,bs); ctx.fillStyle=P.accD; ctx.fillText(bigLine, M-5, y+120+bs*0.75);
+  let ty=y+160+bs;
+  if(bigLine!==D.type_en){
+    ctx.font=S.fe(500,46); ctx.fillStyle=P.ink; ctx.fillText(D.type_en||"", M, ty);
+    ctx.font=S.fc(400,38); ctx.fillStyle=P.cn; ctx.fillText(D.type_cn||"", M, ty+52);
+  }else if(D.type_cn){
+    ctx.font=S.fc(400,38); ctx.fillStyle=P.cn; ctx.fillText(D.type_cn, M, ty);
+  }
+  // logo top-right (airframe status capsule removed from posters)
+  if(LOGO && cShowLogo(D)) drawLogo(ctx,P.accD,W-M,66,96);
+  // aircraft
+  if(D._shadow) drawShadow(ctx, dx, dw, dy+dhh);
+  drawAircraft(ctx,A,dx,dy,dw,rimShadow(D,S));
+  // the virtual chip is drawn AFTER the aircraft — a tall tail used to bury it
+  // (virtual-livery capsule removed per owner 2026-07-14 — footer attribution + datasheet STATUS row still mark it)
+  // bottom strip
+  const sy=stripTop;
+  ctx.strokeStyle=P.line; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(M,sy); ctx.lineTo(W-M,sy); ctx.stroke();
+  const strip=[];
+  if(D.virtual){
+    strip.push(["AIRCRAFT TYPE","机型",D.type_en||"",D.type_cn||""]);
+    strip.push(["STATUS","状态","Virtual Livery","虚拟涂装 · 非真实航司"]);
+  }else{
+    const find=(re)=>((D.facts||[]).find(f=>re.test(f.label_en||"")));
+    const msn=find(/serial|msn/i), ff=find(/first flight/i);
+    strip.push(["AIRCRAFT TYPE","机型",D.headline_en||D.type_en||"",D.headline_cn||D.type_cn||""]);
+    if(msn) strip.push(["MSN","制造序列号",msn.value_en,msn.value_cn]);
+    if(ff)  strip.push(["FIRST FLIGHT","首飞",ff.value_en,ff.value_cn]);
+    strip.push(["STATUS","状态",D.status_en||"—",D.status_cn||"—"]);
+  }
+  const colW=(W-2*M)/strip.length;
+  strip.forEach((s,i)=>{
+    const x=M+i*colW;
+    ctx.font=S.fl(700,25); ctx.fillStyle=P.dim; ctx.fillText(s[0]+" · "+s[1], x, sy+44);
+    ctx.font=S.fe(600,36); ctx.fillStyle=P.ink;  ctx.fillText(ellipsize(ctx,s[2]||"",colW-60), x, sy+92);
+    ctx.font=S.fc(400,30); ctx.fillStyle=P.cn;   ctx.fillText(ellipsize(ctx,s[3]||"",colW-60), x, sy+134);
+    if(i){ctx.strokeStyle=P.line; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x-34,sy+26); ctx.lineTo(x-34,sy+140); ctx.stroke();}
+  });
+  // watermark + attribution
+  if(cShowWm(D)){ctx.font=S.fc(400,29); ctx.fillStyle=P.wm; ctx.textAlign="center"; ctx.fillText(cWmText(D), W/2, H-40);}
+  if(cShowAttrib(D)){
+    ctx.textAlign="right";
+    if(D.virtual){
+      // V5.3: CC-BY-* source art still requires attribution on virtual works
+      if(D.ifline){ctx.font=S.fl(400,22); ctx.fillStyle=P.faint; ctx.fillText(D.ifline, W-M, H-100);}
+      ctx.font=S.fe(400,24); ctx.fillStyle=P.dim; ctx.fillText("Virtual livery · 虚拟涂装作品", W-M, H-66);}
+    else if(D.ifline){ctx.font=S.fl(400,22); ctx.fillStyle=P.faint; ctx.fillText(D.ifline, W-M, H-66);}
+    ctx.font=S.fl(400,22); ctx.fillStyle=P.dim; ctx.fillText(cAttribText(D), W-M, H-30);
+  }
+  ctx.textAlign="left";
+  return cv;
+}
+
+/* ---- shared: the four poster spec-strip cells ---- */
+function getStrip(D){
+  const strip=[];
+  if(D.virtual){
+    strip.push(["AIRCRAFT TYPE","机型",D.type_en||"",D.type_cn||""]);
+    strip.push(["STATUS","状态","Virtual Livery","虚拟涂装 · 非真实航司"]);
+  }else{
+    const find=(re)=>((D.facts||[]).find(f=>re.test(f.label_en||"")));
+    const msn=find(/serial|msn/i), ff=find(/first flight/i);
+    strip.push(["AIRCRAFT TYPE","机型",D.headline_en||D.type_en||"",D.headline_cn||D.type_cn||""]);
+    if(msn) strip.push(["MSN","制造序列号",msn.value_en,msn.value_cn]);
+    if(ff)  strip.push(["FIRST FLIGHT","首飞",ff.value_en,ff.value_cn]);
+    strip.push(["STATUS","状态",D.status_en||"—",D.status_cn||"—"]);
+  }
+  return strip;
+}
+
+/* ================= V4.0 POSTER LAYOUTS — one bespoke banner per new style ======
+   masthead (Broadsheet) · blueprint (Blueprint) · blocks (Bauhaus) · grid (Swiss) */
+function renderLandscapeV2(A,D,S,rnd){
+  const W=3200,H=1362,M=140,K=1.2;
+  const P=makePalette(A,S);
+  const cv=document.createElement("canvas"); cv.width=Math.round(W*K); cv.height=Math.round(H*K);
+  const ctx=cv.getContext("2d"); ctx.scale(K,K);
+  paintBG(ctx,S,P,W,H,rnd);
+  ctx.textBaseline="alphabetic"; ctx.textAlign="left";
+  const aspect=A.bw/A.bh, strip=getStrip(D);
+  const statusText = null; // virtual-livery capsule removed per owner 2026-07-14 (posters never show a status capsule)
+  const logoLeft=(x,y,h)=>{if(!(LOGO&&cShowLogo(D)))return; const l=tintedLogo(P.accD),lw=h*l.width/l.height; ctx.drawImage(l,x,y,lw,h);};
+  // BIG aircraft: near full width, bottom-anchored. Ghost only if the user turned on custom ghost.
+  const bigPlane=(bottomY,capF)=>{
+    const dw=Math.min(W-2*M+140, (capF||900)*aspect), dh=dw/aspect;
+    const dx=(W-dw)/2, dy=bottomY-dh;
+    if(D._ghostP){ let gx=dx+dw/2+(D._ghostP.px||0)*dw*0.5, gy=dy+dh*0.42+(D._ghostP.py||0)*dh*0.5;
+      paintGhost(ctx,S,P,D.reg||D.type_en||"", gx, gy, dw*1.02, 360, D._ghostP); }
+    if(D._shadow) drawShadow(ctx,dx,dw,dy+dh);
+    drawAircraft(ctx,A,dx,dy,dw,rimShadow(D,S));
+    return {dx,dy,dw,dh};};
+  const drawStrip=(sy)=>{
+    ctx.strokeStyle=P.line; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(M,sy); ctx.lineTo(W-M,sy); ctx.stroke();
+    const colW=(W-2*M)/strip.length;
+    strip.forEach((s,i)=>{const x=M+i*colW;
+      ctx.font=S.fl(700,24); ctx.fillStyle=P.dim; ctx.fillText(s[0]+" · "+s[1], x, sy+42);
+      ctx.font=S.fe(600,34); ctx.fillStyle=P.ink; ctx.fillText(ellipsize(ctx,s[2]||"",colW-50), x, sy+88);
+      ctx.font=S.fc(400,28); ctx.fillStyle=P.cn;  ctx.fillText(ellipsize(ctx,s[3]||"",colW-50), x, sy+128);
+      if(i){ctx.strokeStyle=P.line; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x-30,sy+24); ctx.lineTo(x-30,sy+132); ctx.stroke();}});};
+  const footer=(up)=>{ up=up||0; // `up` lifts the lines (Terminal border clearance)
+    if(cShowWm(D)){ctx.font=S.fc(400,28); ctx.fillStyle=P.wm; ctx.textAlign="center"; ctx.fillText(cWmText(D), W/2, H-34-up);}
+    if(cShowAttrib(D)){ctx.textAlign="right";
+      if(D.virtual){
+        if(D.ifline){ctx.font=S.fl(400,21); ctx.fillStyle=P.faint; ctx.fillText(D.ifline, W-M, H-96-up);}
+        ctx.font=S.fe(400,23); ctx.fillStyle=P.dim; ctx.fillText("Virtual livery · 虚拟涂装作品", W-M, H-64-up);}
+      else if(D.ifline){ctx.font=S.fl(400,21); ctx.fillStyle=P.faint; ctx.fillText(D.ifline, W-M, H-64-up);}
+      ctx.font=S.fl(400,21); ctx.fillStyle=P.dim; ctx.fillText(cAttribText(D), W-M, H-30-up);}
+    ctx.textAlign="left";};
+
+  if(S.pl==="masthead"){ // Broadsheet — nameplate, centered headline (moved down), no default ghost
+    let y=116;
+    ctx.font=S.fe(700,36); ctx.fillStyle=P.ink; ctx.fillText((D.airline_en||"").toUpperCase(), M, y);
+    ctx.font=S.fc(500,28); ctx.fillStyle=P.cn;  ctx.fillText(D.airline_cn||"", M, y+38);
+    if(LOGO&&cShowLogo(D)) drawLogo(ctx,P.accD,W-M,y-34,66);
+    ctx.strokeStyle=P.accD; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(M,y+64); ctx.lineTo(W-M,y+64); ctx.stroke();
+    const head=D.reg||D.type_en||"";
+    let hs=230; ctx.font=S.fd(800,hs); let hw=ctx.measureText(head).width; if(hw>W-2*M) hs=Math.floor(hs*(W-2*M)/hw);
+    ctx.font=S.fd(800,hs); ctx.fillStyle=P.accD; ctx.textAlign="center"; ctx.fillText(head, W/2, y+150+hs*0.72); ctx.textAlign="left"; // lowered
+    let ty=y+210+hs;
+    ctx.font=S.fe(500,42); ctx.fillStyle=P.ink; ctx.fillText(D.type_en||"", M, ty);
+    ctx.font=S.fc(400,32); ctx.fillStyle=P.cn;  ctx.fillText(D.type_cn||"", M, ty+44);
+    const stripTop=H-232;
+    bigPlane(stripTop-22, 900);
+    if(cShowStatus(D)&&statusText) statusChip(ctx,S,P,statusText,W-M,ty-40,30); // after the plane — tall tails used to bury it
+    drawStrip(stripTop); footer();
+  }else if(S.pl==="blueprint"){ // Blueprint — engineering drawing: frame, big plane, dims, title block
+    ctx.strokeStyle=rgba(P.accDC,.5); ctx.lineWidth=2; ctx.strokeRect(40,40,W-80,H-80);
+    ctx.strokeStyle=rgba(P.accDC,.22); ctx.strokeRect(56,56,W-112,H-112);
+    let y=126;
+    ctx.font=S.fl(700,34); ctx.fillStyle=P.accD; ctx.fillText("DWG. "+(D.reg||"").toUpperCase(), M, y);
+    ctx.font=S.fe(500,40); ctx.fillStyle=P.ink;  ctx.fillText(D.type_en||"", M, y+52);
+    ctx.font=S.fc(400,30); ctx.fillStyle=P.cn;   ctx.fillText((D.airline_en?D.airline_en+" · ":"")+(D.airline_cn||""), M, y+96);
+    if(LOGO&&cShowLogo(D)) drawLogo(ctx,P.accD,W-M,110,56);
+    const g=bigPlane(H-350, 820);
+    if(cShowStatus(D)&&statusText) statusChip(ctx,S,P,statusText,W-M,150,30); // after the plane — tall tails used to bury it
+    // width dimension line under the aircraft
+    ctx.strokeStyle=rgba(P.accDC,.75); ctx.lineWidth=2;
+    const my=g.dy+g.dh+28;
+    ctx.beginPath(); ctx.moveTo(g.dx,my); ctx.lineTo(g.dx+g.dw,my); ctx.stroke();
+    for(const xx of [g.dx,g.dx+g.dw]){ctx.beginPath(); ctx.moveTo(xx,my-16); ctx.lineTo(xx,my+16); ctx.stroke();}
+    ctx.font=S.fl(600,24); ctx.fillStyle=P.dim; ctx.textAlign="center";
+    ctx.fillText((D.headline_en||D.type_en||"")+" — SIDE ELEVATION", g.dx+g.dw/2, my+38); ctx.textAlign="left";
+    // title block band at the bottom
+    const tby=H-268, tbH=150, cw=(W-2*M)/strip.length;
+    ctx.strokeStyle=rgba(P.accDC,.7); ctx.lineWidth=2; ctx.strokeRect(M,tby,W-2*M,tbH);
+    strip.forEach((s,i)=>{ const x=M+i*cw;
+      if(i){ctx.beginPath(); ctx.moveTo(x,tby); ctx.lineTo(x,tby+tbH); ctx.stroke();}
+      ctx.font=S.fl(700,20); ctx.fillStyle=P.dim; ctx.fillText(s[0]+" · "+s[1], x+18, tby+38);
+      ctx.font=S.fe(600,30); ctx.fillStyle=P.ink; ctx.fillText(ellipsize(ctx,s[2]||"",cw-36), x+18, tby+88);
+      ctx.font=S.fc(400,24); ctx.fillStyle=P.cn;  ctx.fillText(ellipsize(ctx,s[3]||"",cw-36), x+18, tby+126);});
+    footer();
+  }else if(S.pl==="blocks"){ // Bauhaus — left header + accent bar, BIG aircraft
+    let y=148;
+    ctx.font=S.fe(700,46); ctx.fillStyle=P.ink; ctx.fillText((D.airline_en||"").toUpperCase(), M, y);
+    ctx.font=S.fc(500,36); ctx.fillStyle=P.cn;  ctx.fillText(D.airline_cn||"", M, y+50);
+    const head=D.reg||D.type_en||"";
+    let hs=190; ctx.font=S.fd(800,hs); let hw=ctx.measureText(head).width; if(hw>W*0.6) hs=Math.floor(hs*W*0.6/hw);
+    ctx.fillStyle=P.accD; ctx.fillRect(M, y+96, 26, hs*0.86);
+    ctx.font=S.fd(800,hs); ctx.fillStyle=P.accD; ctx.fillText(head, M+52, y+96+hs*0.78);
+    let ty=y+156+hs;
+    ctx.font=S.fe(500,40); ctx.fillStyle=P.ink; ctx.fillText(D.type_en||"", M, ty);
+    ctx.font=S.fc(400,32); ctx.fillStyle=P.cn;  ctx.fillText(D.type_cn||"", M, ty+44);
+    logoLeft(M,46,42); // logo top-left (kept clear of the tail)
+    const stripTop=H-232;
+    bigPlane(stripTop-18, 970);
+    if(cShowStatus(D)&&statusText) statusChip(ctx,S,P,statusText,W-M,180,30); // after the plane — tall tails used to bury it
+    drawStrip(stripTop); footer();
+  }else if(S.pl==="neon"){ // Synthwave — glowing headline, big aircraft over the grid
+    let y=158;
+    ctx.font=S.fl(600,28); ctx.fillStyle=P.cn; ctx.fillText((D.airline_en||"").toUpperCase()+"   ·   "+(D.airline_cn||""), M, y);
+    const head=D.reg||D.type_en||"";
+    let hs=200; ctx.font=S.fd(800,hs); let hw=ctx.measureText(head).width; if(hw>W*0.62) hs=Math.floor(hs*W*0.62/hw);
+    ctx.save(); ctx.shadowColor="rgba(255,60,200,.9)"; ctx.shadowBlur=38;
+    ctx.font=S.fd(800,hs); ctx.fillStyle=P.ink; ctx.fillText(head, M, y+110+hs*0.75);
+    ctx.shadowBlur=18; ctx.fillText(head, M, y+110+hs*0.75); ctx.restore();
+    let ty=y+156+hs;
+    ctx.font=S.fe(500,40); ctx.fillStyle=P.accD; ctx.fillText(D.type_en||"", M, ty);
+    ctx.font=S.fc(400,32); ctx.fillStyle=P.cn;  ctx.fillText(D.type_cn||"", M, ty+44);
+    if(LOGO&&cShowLogo(D)) drawLogo(ctx,P.accD,W-M,130,58);
+    bigPlane(H-150, 900);
+    if(cShowStatus(D)&&statusText) statusChip(ctx,S,P,statusText,W-M,190,30); // after the plane — tall tails used to bury it
+    footer();
+  }else if(S.pl==="terminal"){ // Terminal — mono readout header, big aircraft
+    let y=118;
+    ctx.font=S.fl(700,38); ctx.fillStyle=P.accD; ctx.fillText("> IZHANG.AVIATION // AIRFRAME.SYS", M, y);
+    y+=66; const lh=52;
+    const lines=[["OPERATOR",(D.airline_en||"")+(D.airline_cn?"  "+D.airline_cn:"")],
+      ["REG",(D.reg||"").toUpperCase()],["TYPE",D.type_en||""],
+      ["STATUS",(D.status_en||"")+(D.status_cn?" / "+D.status_cn:"")]];
+    for(const [k,v] of lines){ ctx.font=S.fl(500,32); ctx.fillStyle=P.dim; ctx.fillText(k+":", M, y);
+      ctx.fillStyle=P.ink; ctx.fillText(ellipsize(ctx,v,W*0.6), M+250, y); y+=lh; }
+    ctx.fillStyle=P.accD; ctx.fillRect(M+250+ctx.measureText((D.status_en||"")).width+16, y-lh-24, 20, 34); // cursor block
+    if(LOGO&&cShowLogo(D)) drawLogo(ctx,P.accD,W-M,110,54);
+    bigPlane(H-150, 812); footer(46); // 812 keeps the tail below the readout block (ends y≈392); footer lifted clear of the border
+  }else{ // ticket — a real boarding pass (large text, hero aircraft, tear-off gate stub)
+    const bp=bpData(D);
+    const perfX=Math.round(W*0.68), mainR=perfX-46, mainW=mainR-M;
+    const bfield=(x,y,label,value,vs,maxw)=>{ ctx.font=S.fl(600,22); ctx.fillStyle=P.dim; ctx.fillText(label,x,y);
+      ctx.font=S.fe(700,vs); ctx.fillStyle=P.ink; ctx.fillText(ellipsize(ctx,value,maxw||(mainR-x)),x,y+vs+10); };
+    // ---- wide header banner; "BOARDING PASS" nearly fills its height ----
+    const bnT=40, bnH=176, bnMid=bnT+bnH/2;
+    ctx.fillStyle=P.accD; ctx.fillRect(0,bnT,W,bnH);
+    let logoRight=M;
+    if(LOGO&&cShowLogo(D)){const l=tintedLogo("#ffffff"),lh=92,lw=lh*l.width/l.height; ctx.drawImage(l,M,bnT+(bnH-lh)/2,lw,lh); logoRight=M+lw;}
+    ctx.font=S.fd(800,120); const bpLeft=mainR-ctx.measureText("BOARDING PASS").width;
+    // airline name centred in the gap between the logo and BOARDING PASS
+    ctx.textAlign="center"; ctx.font=S.fe(700,46); ctx.fillStyle="#fff";
+    ctx.fillText(ellipsize(ctx,(D.airline_en||"").toUpperCase(), Math.max(220,bpLeft-logoRight-80)), (logoRight+bpLeft)/2, bnMid+16);
+    ctx.textAlign="right"; ctx.font=S.fd(800,120); ctx.fillStyle="#fff"; ctx.fillText("BOARDING PASS", mainR, bnMid+42);
+    ctx.font=S.fd(800,40); ctx.fillText("GATE STUB", W-M, bnMid+14); ctx.textAlign="left";
+    // ---- main: passenger, route, flight/date, HUGE seat + zone ----
+    bfield(M, 268, "PASSENGER", bp.passenger, 58, 860);
+    const ry=380;
+    ctx.font=S.fl(600,22); ctx.fillStyle=P.dim; ctx.fillText("FROM", M, ry);
+    ctx.font=S.fd(800,100); ctx.fillStyle=P.accD; ctx.fillText(bp.from_iata, M, ry+96);
+    ctx.font=S.fc(500,30); ctx.fillStyle=P.cn; ctx.fillText(ellipsize(ctx,bp.from_city,300), M, ry+140);
+    ctx.font=S.fe(400,64); ctx.fillStyle=P.dim; ctx.fillText("→", M+330, ry+80);
+    ctx.font=S.fl(600,22); ctx.fillStyle=P.dim; ctx.fillText("TO", M+470, ry);
+    ctx.font=S.fd(800,100); ctx.fillStyle=P.accD; ctx.fillText(bp.to_iata, M+470, ry+96);
+    ctx.font=S.fc(500,30); ctx.fillStyle=P.cn; ctx.fillText(ellipsize(ctx,bp.to_city,300), M+470, ry+140);
+    bfield(1030, 268, "FLIGHT", bp.flight, 46, 420);
+    bfield(1030, 390, "DATE", bp.date, 40, 420);
+    // HUGE seat + zone — the dominant text on the pass
+    ctx.font=S.fl(600,26); ctx.fillStyle=P.dim; ctx.fillText("SEAT", 1520, 274);
+    ctx.font=S.fd(800,150); ctx.fillStyle=P.accD; ctx.fillText(bp.seat, 1520, 274+150);
+    ctx.font=S.fl(600,26); ctx.fillStyle=P.dim; ctx.fillText("ZONE", 1980, 274);
+    ctx.font=S.fd(800,150); ctx.fillStyle=P.accD; ctx.fillText(bp.zone, 1980, 274+150);
+    // ---- hero aircraft filling the main width ----
+    { const bandTop=548, bandH=545;
+      let dw=Math.min(mainW, 560*aspect), dh=dw/aspect; if(dh>bandH){dh=bandH; dw=dh*aspect;}
+      drawAircraft(ctx,A, M+(mainW-dw)/2, bandTop+(bandH-dh)/2, dw, rimShadow(D,S)); }
+    // ---- barcode + ATB text (main only) ----
+    if(BARCODE.complete&&BARCODE.naturalWidth) ctx.drawImage(BARCODE, M, 1108, mainW, 92);
+    ctx.font=S.fl(400,21); ctx.fillStyle=P.accDC;
+    ctx.fillText(`PNR ${bp.pnr}    TKT ${bp.ticket}    FB ${bp.fare_basis}    ${bp.price}`, M, 1238);
+    // ---- gate stub: KEY info big, two columns, larger fonts throughout ----
+    const sx=perfX+44, sw=(W-M)-sx, colW=sw/2;
+    const sfield=(x,y,label,value,vs,maxw)=>{ ctx.font=S.fl(600,22); ctx.fillStyle=P.dim; ctx.fillText(label,x,y);
+      ctx.font=S.fe(700,vs); ctx.fillStyle=P.ink; ctx.fillText(ellipsize(ctx,value,maxw||(sx+sw-x)),x,y+vs+8); };
+    sfield(sx, 274, "FLIGHT", bp.flight, 64, sw);
+    // SEAT + GATE — the key boarding info, huge
+    ctx.font=S.fl(600,26); ctx.fillStyle=P.dim; ctx.fillText("SEAT", sx, 452);
+    ctx.font=S.fd(800,128); ctx.fillStyle=P.accD; ctx.fillText(bp.seat, sx, 452+128);
+    ctx.font=S.fl(600,26); ctx.fillStyle=P.dim; ctx.fillText("GATE", sx+colW, 452);
+    ctx.font=S.fd(800,128); ctx.fillStyle=P.accD; ctx.fillText(bp.gate, sx+colW, 452+128);
+    // secondary details, two columns
+    sfield(sx,      704, "ZONE", bp.zone, 52, colW-16);
+    sfield(sx+colW, 704, "BOARDING", bp.boarding, 52, colW-16);
+    sfield(sx,      834, "DATE", bp.date, 46, colW-16);
+    sfield(sx+colW, 834, "DEPARTS (STD)", bp.dep, 46, colW-16);
+    sfield(sx,      964, "FROM", bp.from_city+" / "+bp.from_iata, 42, colW-16);
+    sfield(sx+colW, 964, "TO", bp.to_city+" / "+bp.to_iata, 42, colW-16);
+    sfield(sx,     1094, "CLASS / STATUS", bp.fare_class+" · "+bp.tier, 46, sw);
+    // ---- perforation + tear indicator ----
+    ctx.strokeStyle=rgba(P.accDC,.6); ctx.lineWidth=2; ctx.setLineDash([6,11]);
+    ctx.beginPath(); ctx.moveTo(perfX,bnT); ctx.lineTo(perfX,H-40); ctx.stroke(); ctx.setLineDash([]);
+    ctx.save(); ctx.translate(perfX-6, H*0.68); ctx.rotate(Math.PI/2);
+    ctx.font=S.fl(600,18); ctx.fillStyle=P.dim; ctx.textAlign="center"; ctx.fillText("✂  TEAR HERE", 0, -7);
+    ctx.restore(); ctx.textAlign="left";
+    footer();
+  }
+  return cv;
+}
+
+/* ================= DATA SHEET (design width 2160 → 3240; 9:16 locked or content-height) ================= */
+function renderPortrait(A,D,S,seedP,free,rat){
+  if(rat) return portraitCore(A,D,S,mulberry32(seedP),Math.max(1600,Math.round(2160*rat.h/rat.w)),false).cv;
+  if(!free) return portraitCore(A,D,S,mulberry32(seedP),3840,false).cv;
+  // free height: measure pass on an oversized canvas, then re-render at exact height
+  const est=3800+((D.history||[]).length)*170+((D.notes_en||"").length+(D.notes_cn||"").length)*1.4+900;
+  const m=portraitCore(A,D,S,mulberry32(seedP),Math.ceil(est),true);
+  return portraitCore(A,D,S,mulberry32(seedP),m.endY+230,true).cv;
+}
+function portraitCore(A,D,S,rnd,H,free){
+  const W=2160,M=120,K=1.5;
+  const P=makePalette(A,S);
+  const cv=document.createElement("canvas"); cv.width=Math.round(W*K); cv.height=Math.round(H*K);
+  const ctx=cv.getContext("2d"); ctx.scale(K,K);
+  paintBG(ctx,S,P,W,H,rnd);
+  ctx.textBaseline="alphabetic";
+
+  const section=(y,en,cn)=>{
+    ctx.textAlign="left";
+    if(S.id==="editorial"||S.id==="broadsheet"){
+      ctx.font=S.fd(700,50); ctx.fillStyle=P.ink; ctx.fillText(en, M, y);
+      ctx.font=S.fc(500,36); ctx.fillStyle=P.cn;  ctx.fillText(cn, M, y+48);
+      ctx.strokeStyle=P.line; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(M,y+72); ctx.lineTo(W-M,y+72); ctx.stroke();
+      return y+118;
+    }
+    ctx.fillStyle=P.accD; rr(ctx,M,y-40,12,86,S.radius===0.01?0.01:6); ctx.fill();
+    ctx.font=S.fd(800,52); ctx.fillStyle=P.ink; ctx.fillText(en, M+40, y);
+    ctx.font=S.fc(500,38); ctx.fillStyle=P.cn;  ctx.fillText(cn, M+40, y+50);
+    return y+96;
+  };
+
+  /* ---- header ---- */
+  let y=190;
+  ctx.textAlign="left";
+  ctx.font=S.fe(600,60); ctx.fillStyle=P.ink; ctx.fillText((D.airline_en||"").toUpperCase(), M, y);
+  ctx.font=S.fc(500,48); ctx.fillStyle=P.cn;  ctx.fillText(D.airline_cn||"", M, y+62);
+  if(LOGO && cShowLogo(D)) drawLogo(ctx,P.accD,W-M,y-58,110);
+  y+=210;
+  // long regs used to run underneath the status chip — shrink the reg so both fit
+  // virtual-livery capsule removed per owner 2026-07-14 (the STATUS facts row still shows it); real airframes keep their status capsule
+  const chipLbl=(cShowStatus(D) && D.status_en && !D.virtual) ? {text:(D.status_en+" · "+(D.status_cn||"")).trim(),tone:D.status_tone} : null;
+  let chipW=0;
+  if(chipLbl){ ctx.font=S.fc(600,34); chipW=ctx.measureText(chipLbl.text).width+34*1.65; }
+  let rs=180; ctx.font=S.fd(800,rs);
+  const regMax=(W-2*M)-(chipW?chipW+70:0), regW=ctx.measureText(D.reg||"").width;
+  if(regW>regMax) rs=Math.floor(rs*regMax/regW);
+  ctx.font=S.fd(800,rs); ctx.fillStyle=P.accD; ctx.fillText(D.reg||"", M-6, y);
+  if(chipLbl) statusChip(ctx,S,P,chipLbl,W-M,y-118,34);
+  y+=86;
+  ctx.font=S.fe(500,54); ctx.fillStyle=P.ink; ctx.fillText(D.type_en||"", M, y);
+  ctx.font=S.fc(400,44); ctx.fillStyle=P.cn;  ctx.fillText(D.type_cn||"", M, y+58);
+  y+=110;
+
+  /* ---- hero band with aircraft ---- */
+  let dw=W-70, dh=A.bh*(dw/A.bw);
+  const bandH=clamp(dh+110, 520, 900);
+  // deep airframes (small aspect ratio) used to spill out of the band into the
+  // facts section — scale to fit inside instead
+  if(dh>bandH-70){ const fits=(bandH-70)/dh; dw*=fits; dh*=fits; }
+  const planeX=(W-dw)/2;
+  if(!S.dark && S.mode!=="dither"){ ctx.fillStyle=P.bg2; ctx.fillRect(0,y,W,bandH); }
+  else{
+    ctx.strokeStyle=P.line; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,y+bandH); ctx.lineTo(W,y+bandH); ctx.stroke();
+  }
+  if(S.mode==="dither"){ // dithered "ground" under the aircraft
+    ctx.save(); ctx.beginPath(); ctx.rect(0,y,W,bandH); ctx.clip();
+    ditherFade(ctx,0,y+bandH*0.62,W,bandH*0.38,rgba(P.accDC,.35),true,rnd);
+    ctx.restore();
+  }
+  const planeY=y+(bandH-dh)/2+14;
+  ctx.save(); ctx.beginPath(); ctx.rect(0,y,W,bandH); ctx.clip();
+  {const gs=D._ghostS; let gcx=W/2+(rnd()-0.5)*80, gcy=planeY+dh*0.42;
+   if(gs){gcx+=(gs.px||0)*W*0.4; gcy+=(gs.py||0)*bandH*0.45;}
+   paintGhost(ctx,S,P,D.reg||"", gcx, gcy, W*0.94, 400, gs);}
+  ctx.restore(); ctx.textAlign="left";
+  if(D._shadow) drawShadow(ctx, planeX, dw, planeY+dh);
+  drawAircraft(ctx,A,planeX,planeY,dw,rimShadow(D,S));
+  y+=bandH+96;
+
+  /* ---- facts grid ---- */
+  y=section(y,"AIRFRAME PROFILE","机体档案");
+  const facts=(D.facts||[]).slice(0,10);
+  const colW=(W-2*M-80)/2;
+  const rowH= facts.length>6 ? 152 : 186;
+  y+=30;
+  facts.forEach((f,i)=>{
+    const col=i%2, row=Math.floor(i/2);
+    const x=M+col*(colW+80), yy=y+row*rowH;
+    ctx.font=S.fl(700,29); ctx.fillStyle=P.dim;
+    ctx.fillText(ellipsize(ctx,(f.label_en||"").toUpperCase()+" · "+(f.label_cn||""),colW), x, yy);
+    ctx.font=S.fe(600,46); ctx.fillStyle=P.ink;
+    ctx.fillText(ellipsize(ctx,f.value_en||"",colW), x, yy+58);
+    ctx.font=S.fc(400,36); ctx.fillStyle=P.cn;
+    const vcn=(f.value_cn && f.value_cn!==f.value_en)?f.value_cn:"";
+    if(vcn) ctx.fillText(ellipsize(ctx,vcn,colW), x, yy+108);
+    ctx.strokeStyle=P.line; ctx.lineWidth=2;
+    const dy2=yy+126; // right beneath the lighter CN value line
+    ctx.beginPath(); ctx.moveTo(x,dy2); ctx.lineTo(x+colW,dy2); ctx.stroke();
+  });
+  y+=Math.ceil(facts.length/2)*rowH+10;
+
+  /* ---- watermark (middle of infographic) ---- */
+  if(cShowWm(D)){ctx.font=S.fc(400,34); ctx.fillStyle=P.wm; ctx.textAlign="center";
+    ctx.fillText(cWmText(D), W/2, y); ctx.textAlign="left";}
+  y+=74;
+
+  /* ---- operator history + notes: adaptive space distribution ---- */
+  const hist=(D.history||[]);
+  const notesLines = (()=>{
+    if(!D.notes_en && !D.notes_cn) return null;
+    ctx.font=S.fe(400,34); const en=wrap(ctx,D.notes_en||"",W-2*M-100);
+    ctx.font=S.fc(400,33); const cn=wrap(ctx,D.notes_cn||"",W-2*M-100);
+    return {en,cn,h: 114+en.length*49+cn.length*47+40};
+  })();
+  const footerH=170;
+  if(hist.length){
+    y=section(y,"OPERATOR HISTORY","运营历史");
+    y+=22;
+    // aligned columns keyed to the longest period and the longest registration
+    const tlx=M+14;
+    ctx.font=S.fl(600,30);
+    const perW=hist.reduce((m,r)=>Math.max(m,ctx.measureText(r.period||"").width),0)+40;
+    ctx.font=S.fe(700,32);
+    const regW=hist.reduce((m,r)=>Math.max(m,ctx.measureText(r.reg||"").width),0)+32;
+    const colReg=tlx+40+perW, colOp=colReg+regW+50;
+    const noteW=520, opW=W-M-colOp-noteW-40;
+    // variable-height rows: the note wraps fully and sets the row height
+    const measureRow=(r)=>{
+      let noteLines=[];
+      ctx.font=S.fc(400,29);
+      if(r.note_en) noteLines=noteLines.concat(wrap(ctx,r.note_en,noteW));
+      if(r.note_cn && r.note_cn!==r.note_en) noteLines=noteLines.concat(wrap(ctx,r.note_cn,noteW));
+      const opBottom=(r.operator_cn && r.operator_cn!==r.operator_en)?90:50;
+      const noteBottom=noteLines.length ? 34+(noteLines.length-1)*38+12 : 0;
+      return {noteLines, h: Math.max(100, Math.max(opBottom,noteBottom)+38)};
+    };
+    const metas=hist.map(measureRow);
+    let rows=hist.map((r,i)=>({r,m:metas[i]})), cut=0;
+    if(!free){
+      const bottomLimit = notesLines ? H-footerH-notesLines.h-56 : H-footerH-60;
+      const room=bottomLimit-y;
+      const total=metas.reduce((s,m)=>s+m.h,0);
+      if(total>room){ // keep the origin stint + as many recent stints as fit
+        let budget=room-metas[0].h-44;
+        const tail=[];
+        for(let i=hist.length-1;i>=1;i--){
+          if(metas[i].h>budget) break;
+          budget-=metas[i].h; tail.unshift({r:hist[i],m:metas[i]});
+        }
+        rows=[{r:hist[0],m:metas[0]}].concat(tail);
+        cut=hist.length-rows.length;
+      }
+    }
+    const tops=[]; {let t=y; for(const rw2 of rows){tops.push(t); t+=rw2.m.h;}}
+    ctx.strokeStyle=P.line; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(tlx,tops[0]+26); ctx.lineTo(tlx,tops[tops.length-1]+26); ctx.stroke();
+    rows.forEach(({r,m},i)=>{
+      const yy=tops[i];
+      ctx.fillStyle=P.accD; ctx.beginPath(); ctx.arc(tlx,yy+26,10,0,7); ctx.fill();
+      ctx.fillStyle=P.bg; ctx.beginPath(); ctx.arc(tlx,yy+26,4,0,7); ctx.fill();
+      ctx.font=S.fl(600,30); ctx.fillStyle=P.dim; ctx.fillText(r.period||"", tlx+40, yy+36);
+      ctx.fillStyle=rgba(P.accDC,S.mode==="scifi"?.22:.12); rr(ctx,colReg,yy+2,regW,48,S.radius); ctx.fill();
+      ctx.font=S.fe(700,32); ctx.fillStyle=P.accD; ctx.fillText(r.reg||"", colReg+16, yy+36);
+      ctx.font=S.fe(650,38); ctx.fillStyle=P.ink;
+      ctx.fillText(ellipsize(ctx,r.operator_en||"",opW), colOp, yy+36);
+      ctx.font=S.fc(400,31); ctx.fillStyle=P.cn;
+      if(r.operator_cn && r.operator_cn!==r.operator_en)
+        ctx.fillText(ellipsize(ctx,r.operator_cn,opW), colOp, yy+80);
+      ctx.textAlign="right"; ctx.font=S.fc(400,29); ctx.fillStyle=P.dim;
+      m.noteLines.forEach((l,k)=>ctx.fillText(l, W-M, yy+34+k*38));
+      ctx.textAlign="left";
+    });
+    y=tops[tops.length-1]+rows[rows.length-1].m.h;
+    if(cut>0){
+      ctx.font=S.fc(400,30); ctx.fillStyle=P.dim;
+      ctx.fillText(`… +${cut} entries condensed · 另有${cut}条记录从略`, tlx+44, y+4);
+      y+=44;
+    }
+  }
+
+  /* ---- notes: anchored just above the footer (fixed) or in flow (free) ---- */
+  let endY=y+10;
+  if(notesLines){
+    // fixed mode: strictly anchored above the footer so it can never run off the page
+    const boxTop= free ? y+8 : H-footerH-notesLines.h-36;
+    const nh=notesLines.h;
+    endY=boxTop+nh+10;
+    ctx.fillStyle=rgba(P.accDC,S.mode==="scifi"?.14:.07); rr(ctx,M,boxTop,W-2*M,nh,S.radius===0.01?0.01:18); ctx.fill();
+    ctx.fillStyle=TONES[D.status_tone]||P.accD; rr(ctx,M,boxTop,12,nh,S.radius===0.01?0.01:6); ctx.fill();
+    let yy=boxTop+72;
+    ctx.font=S.fd(800,40); ctx.fillStyle=P.ink; ctx.fillText("REMARKS · 备注", M+50, yy);
+    yy+=62;
+    ctx.font=S.fe(400,34); ctx.fillStyle=P.ink;
+    for(const l of notesLines.en){ctx.fillText(l, M+50, yy); yy+=49;}
+    yy+=6;
+    ctx.font=S.fc(400,33); ctx.fillStyle=P.cn;
+    for(const l of notesLines.cn){ctx.fillText(l, M+50, yy); yy+=47;}
+  }
+
+  /* ---- footer band ---- */
+  ctx.fillStyle=P.deep; ctx.fillRect(0,H-footerH,W,footerH);
+  if(LOGO && cShowLogo(D)){const lh=76,l=tintedLogo("#ffffff"),lw=lh*l.width/l.height;
+    ctx.drawImage(l, M, H-footerH+(footerH-lh)/2, lw, lh);}
+  if(cShowAttrib(D)){
+    ctx.textAlign="right";
+    if(D.ifline){ctx.font=S.fl(400,24); ctx.fillStyle="rgba(255,255,255,.16)";
+      ctx.fillText(D.ifline, W-M, H-footerH/2-14);}
+    ctx.font=S.fl(400,24); ctx.fillStyle="rgba(255,255,255,.72)";
+    ctx.fillText(cAttribText(D), W-M, H-footerH/2+(D.ifline?28:10));
+    ctx.textAlign="left";
+  }
+  return {cv, endY};
+}
+
+/* ================= UI wiring ================= */
+const $=id=>document.getElementById(id);
+const statusEl=$("status");
+function setStatus(msg,cls){for(const el of [statusEl,$("rStatus")]){el.textContent=msg; el.className=cls||"";}}
+
+const dz=$("dropzone"), fileIn=$("file");
+dz.addEventListener("click",()=>fileIn.click());
+dz.addEventListener("dragover",e=>{e.preventDefault();dz.classList.add("hover");});
+dz.addEventListener("dragleave",()=>dz.classList.remove("hover"));
+dz.addEventListener("drop",e=>{e.preventDefault();dz.classList.remove("hover"); if(e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);});
+fileIn.addEventListener("change",()=>{if(fileIn.files[0]) loadFile(fileIn.files[0]);});
+$("btnBrowse").addEventListener("click",e=>{e.stopPropagation(); fileIn.click();});
+$("btnPaste").addEventListener("click",async e=>{
+  e.stopPropagation();
+  try{
+    const items=await navigator.clipboard.read();
+    for(const it of items) for(const type of it.types) if(type.startsWith("image/")){
+      const blob=await it.getType(type);
+      loadFile(new File([blob],"clipboard.png",{type}));
+      return;
+    }
+    setStatus("NO IMAGE ON CLIPBOARD","err");
+  }catch(err){setStatus("CLIPBOARD BLOCKED BY BROWSER — PRESS \u2318V INSTEAD","err");}
+});
+document.addEventListener("paste",e=>{
+  if($("viewAircraft").style.display==="none") return; // rocket view has its own handler
+  const it=[...(e.clipboardData?.items||[])].find(i=>i.type.startsWith("image/"));
+  if(it){e.preventDefault(); loadFile(it.getAsFile());}
+});
+
+/* ---- does this image have a background to remove? Sample the RIM of the whole
+   image: if most of its EDGE pixels are filled (opaque), a background is present
+   → send it to the removal API. An already cut-out picture has a transparent rim
+   and skips the API. (Used by BOTH the aircraft and rocket uploads.) ---- */
+function needsBgRemoval(img){
+  const S=100, c=document.createElement("canvas"); c.width=S; c.height=S;
+  const x=c.getContext("2d",{willReadFrequently:true}); x.drawImage(img,0,0,S,S);
+  const d=x.getImageData(0,0,S,S).data;
+  let opaque=0,total=0;
+  for(let i=0;i<S;i++) for(const p of [i,(S-1)*S+i,i*S,i*S+(S-1)]){ total++; if(d[p*4+3]>40) opaque++; }
+  if(opaque/total > 0.5) return true; // over half the rim is filled → background
+  /* V5.2: transparent rim, but words/decals may float OUTSIDE the aircraft.
+     Find the largest solid blob (the aircraft) and count solid pixels outside
+     its bounding box. Semi-transparent pixels (alpha≤130, e.g. soft ground
+     shadows) and the zone directly BELOW the aircraft are tolerated. */
+  const solid=new Uint8Array(S*S);
+  for(let p=0;p<S*S;p++) if(d[p*4+3]>130) solid[p]=1;
+  const seen=new Uint8Array(S*S);
+  let best={n:0,x0:0,x1:0,y0:0,y1:0};
+  for(let p=0;p<S*S;p++){
+    if(!solid[p]||seen[p]) continue;
+    const stack=[p]; let n=0,x0=S,x1=0,y0=S,y1=0; seen[p]=1;
+    while(stack.length){
+      const q=stack.pop(); n++;
+      const qx=q%S, qy=(q/S)|0;
+      if(qx<x0)x0=qx; if(qx>x1)x1=qx; if(qy<y0)y0=qy; if(qy>y1)y1=qy;
+      for(const nb of [q-1,q+1,q-S,q+S]){
+        if(nb<0||nb>=S*S) continue;
+        if(Math.abs((nb%S)-qx)>1) continue; // no row wrap
+        if(solid[nb]&&!seen[nb]){seen[nb]=1; stack.push(nb);}
+      }
+    }
+    if(n>best.n) best={n,x0,x1,y0,y1};
+  }
+  if(!best.n) return false;
+  let stray=0;
+  for(let p=0;p<S*S;p++){
+    if(!solid[p]) continue;
+    const px=p%S, py=(p/S)|0;
+    const inBox = px>=best.x0-2&&px<=best.x1+2&&py>=best.y0-2&&py<=best.y1+2;
+    const shadowZone = py>best.y1 && px>=best.x0 && px<=best.x1;
+    if(!inBox && !shadowZone) stray++;
+  }
+  return stray > 6; // scattered decals/text outside the aircraft → clean it
+}
+/* rotating spinner words: a fresh random word every ~2 s, dots animate faster */
+function bgSpinner(){
+  let word=SPIN[(Math.random()*SPIN.length)|0], dots=0;
+  const draw=()=>setStatus(word+".".repeat(dots+1));
+  draw();
+  const di=setInterval(()=>{dots=(dots+1)%3; draw();},420);
+  const wi=setInterval(()=>{word=SPIN[(Math.random()*SPIN.length)|0]; dots=0; draw();},2000);
+  return ()=>{clearInterval(di); clearInterval(wi);};
+}
+function withBgRemoval(f,onImage){
+  const img=new Image();
+  img.onload=async()=>{
+    if(!needsBgRemoval(img)){ setStatus("TRANSPARENT IMAGE — SKIPPING REMOVAL","ok"); onImage(img); return; }
+    const stop=bgSpinner(); // spinner starts the moment a filled rim is detected
+    try{
+      const fd=new FormData(); fd.append("image",f,f.name||"image.png");
+      const r=await fetch("/api/removebg",{method:"POST",body:fd});
+      stop(); // spinner disappears once the image comes back
+      if(!r.ok){ let j={}; try{j=await r.json();}catch(e){}
+        if(j.error==="credits"){ showCreditsOut(); setStatus("YOU RAN OUT OF CREDITS — see the banner above","err"); return; }
+        setStatus("BACKGROUND REMOVAL FAILED: "+(j.error||("HTTP "+r.status)),"err"); return; }
+      const out=new Image();
+      out.onload=()=>onImage(out);
+      out.onerror=()=>setStatus("BACKGROUND REMOVAL RETURNED AN UNREADABLE IMAGE","err");
+      out.src=URL.createObjectURL(await r.blob());
+    }catch(e){ stop(); setStatus("BACKGROUND REMOVAL FAILED: "+e.message,"err"); }
+  };
+  img.onerror=()=>setStatus("COULD NOT LOAD IMAGE","err");
+  img.src=URL.createObjectURL(f);
+}
+function showCreditsOut(){ const b=$("creditBanner"); if(b) b.style.display="flex"; }
+$("creditClose").addEventListener("click",()=>$("creditBanner").style.display="none");
+function loadFile(f){ withBgRemoval(f, img=>ingestAircraft(img, f.name));
+}
+
+/* ---- editable palette: click a swatch → native picker (SV square + RGB),
+   or use the ⌖ eyedropper to sample any pixel on screen ---- */
+function hexToRgb(hex){
+  const m=/^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if(!m) return null;
+  const n=parseInt(m[1],16);
+  return {r:(n>>16)&255, g:(n>>8)&255, b:n&255};
+}
+function buildSwatchUI(){
+  $("swatches").innerHTML=`
+    <div class="swgrp">PRIMARY
+      <label class="sw"><i id="sw1" style="position:absolute;inset:0"></i><input type="color" id="c1"></label>
+      <button class="eyebtn" id="eye1" title="Pick from screen 屏幕取色">⌖</button></div>
+    <div class="swgrp">SECONDARY
+      <label class="sw"><i id="sw2" style="position:absolute;inset:0"></i><input type="color" id="c2"></label>
+      <button class="eyebtn" id="eye2" title="Pick from screen 屏幕取色">⌖</button></div>
+    <div class="swgrp">DERIVED
+      <span class="sw" id="sw3"></span><span class="sw" id="sw4"></span></div>`;
+  refreshSwatches();
+  $("c1").addEventListener("input",e=>setAccent(1,e.target.value));
+  $("c2").addEventListener("input",e=>setAccent(2,e.target.value));
+  for(const i of [1,2]) $("eye"+i).addEventListener("click",async()=>{
+    if(!window.EyeDropper){setStatus("EYEDROPPER NEEDS CHROME/EDGE — USE THE SWATCH PICKER","err");return;}
+    try{const r=await new EyeDropper().open(); setAccent(i,r.sRGBHex);}catch(e){}
+  });
+}
+function refreshSwatches(){
+  const P=makePalette(AIRCRAFT,STYLES[0]);
+  $("sw1").style.background=rgbHex(AIRCRAFT.accent);
+  $("sw2").style.background=rgbHex(AIRCRAFT.accent2);
+  $("sw3").style.background=P.accD;
+  $("sw4").style.background=P.bg2;
+  $("c1").value=rgbHex(AIRCRAFT.accent);
+  $("c2").value=rgbHex(AIRCRAFT.accent2);
+}
+function setAccent(i,hex){
+  const c=hexToRgb(hex); if(!c||!AIRCRAFT) return;
+  if(i===1) AIRCRAFT.accent=c; else AIRCRAFT.accent2=c;
+  refreshSwatches();
+  setStatus("COLOURS UPDATED — REBUILD TO APPLY","ok");
+}
+
+$("btnPS").addEventListener("click",()=>{
+  window.open("https://www.planespotters.net/search?q="+encodeURIComponent($("reg").value.trim()),"_blank");
+});
+
+$("btnAF").addEventListener("click",async()=>{
+  const reg=$("reg").value.trim();
+  if(!reg){setStatus("NEED A REGISTRATION","err");return;}
+  const b=$("btnAF"), st=$("afStatus");
+  b.disabled=true; b.innerHTML='<span class="spin"></span>Fetching…';
+  st.textContent="airfleets.net · ~1 min"; setStatus("AUTO-FETCHING AIRFRAME DATA…");
+  try{
+    const r=await fetch("/api/af_fetch",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({reg})});
+    const j=await r.json();
+    if(j.ok && j.text){
+      $("raw").value=j.text;
+      st.innerHTML='✓ '+j.text.length+' chars · <a href="'+j.url+'" target="_blank">source ↗</a>';
+      setStatus("AIRFRAME DATA LOADED — review, then Synthesize","ok");
+    }else{
+      st.textContent="";
+      setStatus("AUTO-FETCH FAILED: "+((j.error||"no data")).slice(0,90)+" — use Planespotters search + paste","err");
+    }
+  }catch(e){ st.textContent=""; setStatus("AUTO-FETCH ERROR: "+e+" — use Planespotters + paste","err"); }
+  b.disabled=false; b.textContent="⤓ Auto-fetch (airfleets)";
+});
+
+$("btnSynth").addEventListener("click",async()=>{
+  const reg=$("reg").value.trim(), raw=$("raw").value.trim();
+  const fictional=$("virtual").checked; // virtual livery → invent plausible fictional data
+  if(!reg){setStatus("NEED A REGISTRATION","err");return;}
+  if(!fictional && !raw){setStatus("NEED REGISTRATION + PASTED TEXT","err");return;}
+  const b=$("btnSynth"); b.disabled=true; b.innerHTML='<span class="spin"></span>Synthesizing…';
+  setStatus(fictional?"INVENTING FICTIONAL DATA…":"QUERYING DEEPSEEK…");
+  try{
+    const body = fictional
+      ? {registration:reg, raw, fictional:true, airline:$("vTitle").value.trim(),
+         type_en:$("vType").value.trim(), type_cn:$("vTypeCn").value.trim()}
+      : {registration:reg, raw};
+    const r=await fetch("/api/synthesize",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(body)});
+    const j=await r.json();
+    if(!r.ok) throw new Error(j.error||r.status);
+    j.reg=reg; // the typed registration is the subject of the infographic
+    if(fictional){
+      j.virtual=true; j.status_tone="virtual";
+      j.status_en=j.status_en||"Virtual Livery"; j.status_cn=j.status_cn||"虚拟涂装";
+      if($("vTitle").value.trim()){j.airline_en=$("vTitle").value.trim(); j.airline_cn="";}
+      if($("vType").value.trim()) j.type_en=$("vType").value.trim();
+      if($("vTypeCn").value.trim()) j.type_cn=$("vTypeCn").value.trim();
+    }
+    $("json").value=JSON.stringify(j,null,2);
+    if($("acCustBody").dataset.built) refreshBars("ac");
+    setStatus("DATA READY","ok");
+  }catch(e){setStatus("SYNTHESIS FAILED: "+e.message,"err");}
+  b.disabled=false; b.textContent="Synthesize with DeepSeek";
+});
+
+$("virtual").addEventListener("change",()=>{
+  $("virtualFields").style.display=$("virtual").checked?"block":"none";
+  $("btnRender").textContent=$("virtual").checked?"Build virtual posters":"Build infographics";
+});
+
+$("btnRender").addEventListener("click",()=>{
+  if(!AIRCRAFT){setStatus("UPLOAD THE AIRCRAFT PNG FIRST","err");return;}
+  if($("virtual").checked){
+    // if fictional data was synthesized, build full outputs (poster + sheet); else poster-only
+    let D=null; try{D=JSON.parse($("json").value);}catch(e){}
+    if(D && ((D.facts&&D.facts.length)||(D.history&&D.history.length))){
+      D.virtual=true; D.reg=$("reg").value.trim()||D.reg;
+      if($("vTitle").value.trim()){D.airline_en=$("vTitle").value.trim(); D.airline_cn="";}
+      if($("vType").value.trim()) D.type_en=$("vType").value.trim();
+      if($("vTypeCn").value.trim()) D.type_cn=$("vTypeCn").value.trim();
+      D.status_en=D.status_en||"Virtual Livery"; D.status_cn=D.status_cn||"虚拟涂装"; D.status_tone="virtual";
+      buildAll(D); return;
+    }
+    buildAll({virtual:true, reg:$("reg").value.trim(),
+      airline_en:$("vTitle").value.trim(), airline_cn:"",
+      type_en:$("vType").value.trim(), type_cn:$("vTypeCn").value.trim(),
+      status_en:"Virtual Livery", status_cn:"虚拟涂装", status_tone:"virtual"});
+    return;
+  }
+  let D;
+  try{D=JSON.parse($("json").value);}catch(e){setStatus("JSON INVALID: "+e.message,"err");return;}
+  buildAll(D);
+});
+
+let BUILT=[];
+async function buildAll(D, fixedSeed){
+  const seed = (fixedSeed!==undefined&&fixedSeed!==null) ? fixedSeed : ((Date.now()^(Math.random()*1e9))>>>0);
+  LAST_AC={D,seed};
+  const WD=prepAircraft(D);
+  const pv=$("previews"); pv.innerHTML=""; BUILT=[];
+  const q=new URLSearchParams(location.search);
+  const filter=q.get("styles") ? q.get("styles").split(",") : null;
+  const list=STYLES.filter(s=>!filter||filter.includes(s.id));
+  const dlbar=document.createElement("div"); dlbar.id="dlallbar"; pv.appendChild(dlbar);
+  const grid=document.createElement("div"); grid.id="previewGrid"; pv.appendChild(grid);
+  const wantSheet=(WD.facts&&WD.facts.length)||(WD.history&&WD.history.length);
+  for(let i=0;i<list.length;i++){
+    const S=list[i];
+    setStatus(`RENDERING ${S.label.toUpperCase()}…`);
+    await new Promise(r=>setTimeout(r,20));
+    const grp=document.createElement("div"); grp.className="style-group";
+    grp.innerHTML=`<div class="gtitle">${S.label} · ${S.labelCN}</div>`;
+    const stem=(WD.reg||WD.type_en||"aircraft").replace(/[\/\\:*?"<>|]/g,"-");
+    let formats;
+    try{
+      const land=renderLandscape(AIRCRAFT,WD,S,mulberry32(seed+i*7919+11));
+      formats=[[land,`${stem}_${S.id}_poster.png`,"Poster 2.35 : 1","3840 × 1634px"]];
+      if(wantSheet){
+        const rat=ratioOf("ratW","ratH");
+        const port=renderPortrait(AIRCRAFT,WD,S,seed+i*7919+53,!rat,rat);
+        formats.push([port,`${stem}_${S.id}_datasheet.png`,
+          rat?`Data sheet ${rat.w} : ${rat.h}`:"Data sheet · content height",
+          `${port.width} × ${port.height}px`]);
+      }
+    }catch(err){ // one bad style must not abort the whole build
+      console.error("style render failed:",S.id,err);
+      const ph=document.createElement("div"); ph.className="placeholder";
+      ph.textContent=`${S.label}: render failed — ${(err&&err.message)||err}`;
+      grp.appendChild(ph); grid.appendChild(grp); continue;
+    }
+    for(const [cv,name,label,dims] of formats){
+      BUILT.push({cv,name});
+      const card=document.createElement("div"); card.className="preview-card";
+      const bar=document.createElement("div"); bar.className="bar";
+      bar.innerHTML=`<div><b>${label}</b><span>${dims}</span></div>`;
+      const btn=document.createElement("button"); btn.textContent="Download PNG";
+      btn.onclick=()=>downloadCanvas(cv,name);
+      bar.appendChild(btn); card.appendChild(bar); card.appendChild(cv); grp.appendChild(card);
+    }
+    grid.appendChild(grp);
+  }
+  const dl=document.createElement("button");
+  dl.textContent=`Download all · ${BUILT.length} files`;
+  dl.onclick=downloadAll;
+  dlbar.appendChild(dl);
+  setStatus("DONE","ok");
+}
+function downloadCanvas(cv,name){
+  cv.toBlob(b=>{const a=document.createElement("a");
+    a.href=URL.createObjectURL(b); a.download=name; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),30000);},"image/png");
+}
+async function downloadAll(){
+  setStatus(`DOWNLOADING ${BUILT.length} FILES…`);
+  for(const {cv,name} of BUILT){
+    downloadCanvas(cv,name);
+    await new Promise(r=>setTimeout(r,450));
+  }
+  setStatus("DONE","ok");
+}
+
+/* ================= ROCKETS ================= */
+$("goRocket").addEventListener("click",()=>{
+  $("viewAircraft").style.display="none"; $("viewRocket").style.display="flex";});
+$("goAircraft").addEventListener("click",()=>{
+  $("viewRocket").style.display="none"; $("viewAircraft").style.display="flex";});
+
+let ROCKET=null;
+const ROCKET_PALETTES=[ // curated aesthetic pairs — rockets are mostly white, so colours are chosen, not sampled
+  ["#1f4e8c","#d9a441"],["#8c2f39","#1d3557"],["#0f766e","#ef6351"],["#5b21b6","#f59e0b"],
+  ["#b3541e","#1d3557"],["#2d6a4f","#c9a227"],["#374785","#f76c6c"],["#7c3aed","#22d3ee"],
+  ["#9d0208","#ffba08"],["#264653","#e76f51"],["#334155","#e11d48"],["#0e7490","#f4a261"]];
+
+/* rocket image intake: if the upload already has transparency it is used
+   directly; otherwise it is sent to the image-upscaling.net AI background
+   removal API (proxied via /api/removebg) with a live seconds counter.
+   The aircraft page is untouched — it still expects transparent PNGs. */
+function processRocketImage(img,name){
+  const cap=2600, sc=Math.min(1, cap/Math.max(img.naturalWidth,img.naturalHeight));
+  const W=Math.round(img.naturalWidth*sc), H=Math.round(img.naturalHeight*sc);
+  const c=document.createElement("canvas"); c.width=W; c.height=H;
+  const x=c.getContext("2d",{willReadFrequently:true});
+  x.drawImage(img,0,0,W,H);
+  const d=x.getImageData(0,0,W,H).data;
+  // density-based bbox: stray alpha specks in AI output don't count
+  const colCnt=new Int32Array(W), rowCnt=new Int32Array(H);
+  for(let y=0;y<H;y++)for(let xx=0;xx<W;xx++){
+    if(d[(y*W+xx)*4+3]>90){colCnt[xx]++;rowCnt[y]++;}}
+  const cTh=Math.max(3,Math.round(H*0.004)), rTh=Math.max(3,Math.round(W*0.004));
+  let x0=0,x1=W-1,y0=0,y1=H-1;
+  while(x0<W&&colCnt[x0]<cTh)x0++; while(x1>x0&&colCnt[x1]<cTh)x1--;
+  while(y0<H&&rowCnt[y0]<rTh)y0++; while(y1>y0&&rowCnt[y1]<rTh)y1--;
+  if(x1<=x0||y1<=y0){setStatus("NO ROCKET FOUND IN THE IMAGE","err");return;}
+  ROCKET={img:c, base:c, w:W, h:H, bx0:x0, by0:y0, bw:x1-x0+1, bh:y1-y0+1};
+  shuffleRocketColours();
+  $("rSharpen").style.display="block";
+  $("shAmt").value=0; $("shAmtV").textContent="0";
+  const th=$("rThumb"), tc=document.createElement("canvas");
+  tc.width=220; tc.height=Math.round(220*H/W);
+  tc.getContext("2d").drawImage(c,0,0,tc.width,tc.height);
+  th.src=tc.toDataURL(); th.style.display="inline-block";
+  $("rDropzone").classList.add("loaded");
+  $("rDropzone").firstChild.textContent=name+" — background removed";
+  setStatus("ROCKET READY · "+ROCKET.bw+"×"+ROCKET.bh+"px","ok");
+}
+function loadRocketFile(f){ withBgRemoval(f, img=>processRocketImage(img, f.name)); }
+function shuffleRocketColours(){
+  const p=ROCKET_PALETTES[(Math.random()*ROCKET_PALETTES.length)|0];
+  ROCKET.accent=hexToRgb(p[0]); ROCKET.accent2=hexToRgb(p[1]);
+  rocketSwatchUI();
+}
+function rocketSwatchUI(){
+  $("rSwatches").innerHTML=`
+    <div class="swgrp">PRIMARY
+      <label class="sw"><i id="rsw1" style="position:absolute;inset:0"></i><input type="color" id="rc1"></label></div>
+    <div class="swgrp">SECONDARY
+      <label class="sw"><i id="rsw2" style="position:absolute;inset:0"></i><input type="color" id="rc2"></label></div>
+    <button class="eyebtn" id="rShuffle" type="button">⤨ Shuffle 换色</button>`;
+  $("rsw1").style.background=rgbHex(ROCKET.accent);
+  $("rsw2").style.background=rgbHex(ROCKET.accent2);
+  $("rc1").value=rgbHex(ROCKET.accent); $("rc2").value=rgbHex(ROCKET.accent2);
+  $("rc1").addEventListener("input",e=>{ROCKET.accent=hexToRgb(e.target.value)||ROCKET.accent; rocketSwatchUI();});
+  $("rc2").addEventListener("input",e=>{ROCKET.accent2=hexToRgb(e.target.value)||ROCKET.accent2; rocketSwatchUI();});
+  $("rShuffle").addEventListener("click",shuffleRocketColours);
+}
+const rdz=$("rDropzone"), rFileIn=$("rFile");
+rdz.addEventListener("click",()=>rFileIn.click());
+rdz.addEventListener("dragover",e=>{e.preventDefault();rdz.classList.add("hover");});
+rdz.addEventListener("dragleave",()=>rdz.classList.remove("hover"));
+rdz.addEventListener("drop",e=>{e.preventDefault();rdz.classList.remove("hover"); if(e.dataTransfer.files[0]) loadRocketFile(e.dataTransfer.files[0]);});
+rFileIn.addEventListener("change",()=>{if(rFileIn.files[0]) loadRocketFile(rFileIn.files[0]);});
+$("rBrowse").addEventListener("click",e=>{e.stopPropagation(); rFileIn.click();});
+$("rPasteBtn").addEventListener("click",async e=>{
+  e.stopPropagation();
+  try{
+    const items=await navigator.clipboard.read();
+    for(const it of items) for(const type of it.types) if(type.startsWith("image/")){
+      loadRocketFile(new File([await it.getType(type)],"clipboard.png",{type})); return;
+    }
+    setStatus("NO IMAGE ON CLIPBOARD","err");
+  }catch(err){setStatus("CLIPBOARD BLOCKED BY BROWSER — PRESS ⌘V INSTEAD","err");}
+});
+// global paste routes to whichever view is open
+document.addEventListener("paste",e=>{
+  const it=[...(e.clipboardData?.items||[])].find(i=>i.type.startsWith("image/"));
+  if(!it) return;
+  e.preventDefault();
+  if($("viewRocket").style.display!=="none") loadRocketFile(it.getAsFile());
+});
+
+$("rWiki").addEventListener("click",()=>{
+  window.open("https://en.wikipedia.org/w/index.php?search="+encodeURIComponent($("rName").value.trim()),"_blank");
+});
+
+$("rSynth").addEventListener("click",async()=>{
+  const name=$("rName").value.trim(), raw=$("rRaw").value.trim();
+  if(!name||!raw){setStatus("NEED ROCKET NAME + PASTED TEXT","err");return;}
+  const b=$("rSynth"); b.disabled=true; b.innerHTML='<span class="spin"></span>Synthesizing…';
+  setStatus("QUERYING DEEPSEEK…");
+  try{
+    const r=await fetch("/api/synthesize_rocket",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({name, raw})});
+    const j=await r.json();
+    if(!r.ok) throw new Error(j.error||r.status);
+    j.name_en=j.name_en||name;
+    $("rJson").value=JSON.stringify(j,null,2);
+    setStatus("DATA READY","ok");
+  }catch(e){setStatus("SYNTHESIS FAILED: "+e.message,"err");}
+  b.disabled=false; b.textContent="Synthesize with DeepSeek";
+});
+
+$("rBuild").addEventListener("click",()=>{
+  if(!ROCKET){setStatus("UPLOAD THE ROCKET PNG FIRST","err");return;}
+  let D;
+  try{D=JSON.parse($("rJson").value);}catch(e){setStatus("JSON INVALID: "+e.message,"err");return;}
+  D.license=$("rLicense").value.trim();
+  buildRocket(D);
+});
+
+function fitSize(ctx,text,fontOf,weight,maxSize,maxW){
+  let s=maxSize; ctx.font=fontOf(weight,s);
+  const w=ctx.measureText(text).width;
+  if(w>maxW) s=Math.floor(s*maxW/w);
+  return s;
+}
+function chipLeft(ctx,S,P,text,tone,x,topY,fontpx){
+  ctx.font=S.fc(600,fontpx);
+  const tw=ctx.measureText(text).width, h=fontpx*1.9, w=tw+fontpx*1.65;
+  const rad=S.chipOutline||S.mode==="dither"||S.mode==="scifi" ? S.radius : h/2;
+  if(S.chipOutline){ctx.strokeStyle=tone; ctx.lineWidth=3; rr(ctx,x,topY,w,h,rad); ctx.stroke(); ctx.fillStyle=tone;}
+  else{ctx.fillStyle=tone; rr(ctx,x,topY,w,h,rad); ctx.fill(); ctx.fillStyle="#fff";}
+  ctx.textAlign="center"; ctx.fillText(text, x+w/2, topY+h*0.69); ctx.textAlign="left";
+  return w;
+}
+
+/* ---- ROCKET POSTER 2.35:1 — rocket lies diagonally, top-left → bottom-right ---- */
+function renderRocketPoster(R,D,S,rnd){
+  const W=3200,H=1362,M=140,K=1.2;
+  const P=makePalette(R,S);
+  const cv=document.createElement("canvas"); cv.width=Math.round(W*K); cv.height=Math.round(H*K);
+  const ctx=cv.getContext("2d"); ctx.scale(K,K);
+  paintBG(ctx,S,P,W,H,rnd);
+  ctx.textBaseline="alphabetic"; ctx.textAlign="left";
+  // diagonal rocket (source is vertical, nose up)
+  const L=Math.hypot(W-320,H-160)*0.96, scale=L/R.bh, rw=R.bw*scale;
+  ctx.save();
+  ctx.translate(W/2+(rnd()-0.5)*60, H/2+(rnd()-0.5)*40);
+  ctx.rotate(-Math.atan2(W-320,H-160));
+  ctx.drawImage(R.img, R.bx0,R.by0,R.bw,R.bh, -rw/2,-L/2,rw,L);
+  if(D.license && cShowAttrib(D)){ // credit along the rocket's right side, reading downward, ending at its tail
+    ctx.translate(rw/2+34, L/2);
+    ctx.rotate(Math.PI/2);
+    ctx.font=S.fl(400,26); ctx.fillStyle=P.faint; ctx.textAlign="right";
+    ctx.fillText(D.license, 0, 0);
+  }
+  ctx.restore();
+  // watermark + attribution, small, at the very top-right
+  ctx.textAlign="right";
+  if(cShowWm(D)){ctx.font=S.fc(400,30); ctx.fillStyle=P.wm; ctx.fillText(cWmText(D), W-M, 88);}
+  if(cShowAttrib(D)){
+    ctx.font=S.fe(400,26); ctx.fillStyle=P.dim; ctx.fillText("Data: public sources · 资料整理自公开来源", W-M, 134);
+    ctx.font=S.fl(400,24); ctx.fillText(cAttribText(D), W-M, 176);
+  }
+  // 3 key facts, top-right: two on the first row, one below — big type
+  const kf=(D.key_facts||[]).slice(0,3);
+  const cell=(f,rx,ty,maxW)=>{
+    ctx.textAlign="right";
+    ctx.font=S.fl(700,30); ctx.fillStyle=P.dim;
+    ctx.fillText(ellipsize(ctx,((f.label_en||"").toUpperCase()+" · "+(f.label_cn||"")),maxW), rx, ty);
+    const vs=fitSize(ctx,f.value_en||"",S.fe,700,60,maxW);
+    ctx.font=S.fe(700,vs); ctx.fillStyle=P.ink;
+    ctx.fillText(f.value_en||"", rx, ty+68);
+    const cn=(f.value_cn&&f.value_cn!==f.value_en)?f.value_cn:"";
+    if(cn){ctx.font=S.fc(400,40); ctx.fillStyle=P.cn;
+      ctx.fillText(ellipsize(ctx,cn,maxW), rx, ty+122);}
+    return cn?176:132;
+  };
+  let ky=224, rowH1=0;
+  if(kf[1]) rowH1=cell(kf[1], W-M-740, ky, 620);
+  if(kf[0]) rowH1=Math.max(rowH1, cell(kf[0], W-M, ky, 680));
+  ky+=rowH1+18;
+  if(kf[2]) ky+=cell(kf[2], W-M, ky, 900)+18;
+  ctx.textAlign="left";
+  // airframe status capsule removed from posters
+  // bottom-left: big logo + big name — fill the corner
+  if(LOGO && cShowLogo(D)){const l=tintedLogo(P.accD), lh=124, lw=lh*l.width/l.height;
+    ctx.drawImage(l,M,H-586,lw,lh);}
+  ctx.fillStyle=P.accD; ctx.fillRect(M, H-416, 190, 12);
+  ctx.font=S.fe(500,48); ctx.fillStyle=P.dim;
+  ctx.fillText((D.headline_en||"")+(D.headline_cn?" · "+D.headline_cn:""), M, H-330);
+  const ns=fitSize(ctx,D.name_en||"",S.fd,800,175,W*0.56);
+  ctx.font=S.fd(800,ns); ctx.fillStyle=P.accD; ctx.fillText(D.name_en||"", M-6, H-186);
+  ctx.font=S.fc(500,72); ctx.fillStyle=P.cn; ctx.fillText(D.name_cn||"", M, H-88);
+  return cv;
+}
+
+/* ---- ROCKET DATA SHEET — the ROCKET sets the page: it nearly fills the right
+   half's width, its scaled length决定 the sheet height, and the left column
+   then includes as much information as fits, dropping low-priority facts ---- */
+function ratioOf(wId,hId){
+  const w=parseFloat($(wId).value), h=parseFloat($(hId).value);
+  return (w>0&&h>0)?{w,h}:null;
+}
+function renderRocketPortrait(R,D,S,seedP,opts){
+  return rocketPortraitCore(R,D,S,mulberry32(seedP),opts||{}).cv;
+}
+function rocketPortraitCore(R,D,S,rnd,opts){
+  const W=2160,M=110,K=1.5,footerH=170;
+  const P=makePalette(R,S);
+  // rocket geometry first — it dictates the page height (unless a ratio is forced)
+  const rightX0=1110, rightW=W-50-rightX0;
+  const scale=opts.scale||0.96;
+  let rw2=rightW*scale, dh=rw2*R.bh/R.bw;
+  const areaTop=150;
+  let H;
+  if(opts.ratio){
+    H=Math.max(1600,Math.round(2160*opts.ratio.h/opts.ratio.w));
+    const maxDh=H-areaTop-80-footerH;
+    if(dh>maxDh){dh=maxDh; rw2=dh*R.bw/R.bh;}
+  }else{
+    dh=clamp(dh,2200,9000); rw2=Math.min(rw2, dh*R.bw/R.bh);
+    H=Math.round(areaTop+dh+80+footerH);
+  }
+  const cv=document.createElement("canvas"); cv.width=Math.round(W*K); cv.height=Math.round(H*K);
+  const ctx=cv.getContext("2d"); ctx.scale(K,K);
+  paintBG(ctx,S,P,W,H,rnd);
+  ctx.textBaseline="alphabetic"; ctx.textAlign="left";
+  const leftW=930, colX=M;
+  /* right half: vertical ghost name behind the rocket, rocket nearly filling it */
+  const rTop=opts.ratio ? areaTop+Math.max(0,(H-areaTop-80-footerH-dh)/2) : areaTop;
+  const rcx=rightX0+rightW/2;
+  ctx.save();
+  ctx.translate(rcx+(rnd()-0.5)*40, rTop+dh/2);
+  ctx.rotate(Math.PI/2);
+  const gs=fitSize(ctx,D.name_en||"",S.fd,900,420,dh*0.96);
+  ctx.font=S.fd(900,gs); ctx.textAlign="center";
+  if(S.mode==="ivory"){ctx.strokeStyle=rgba({r:22,g:24,b:28},.14); ctx.lineWidth=Math.max(2.5,gs*0.011); ctx.strokeText(D.name_en||"",0,gs*0.32);}
+  else{ctx.fillStyle=rgba(P.accDC,S.mode==="scifi"?.20:.14); ctx.fillText(D.name_en||"",0,gs*0.32);}
+  ctx.restore(); ctx.textAlign="left";
+  ctx.drawImage(R.img, R.bx0,R.by0,R.bw,R.bh, rcx-rw2/2, rTop, rw2, dh);
+  if(D.license && cShowAttrib(D)){ // creative-license line, verbatim, vertical, ending at the rocket's bottom
+    ctx.save();
+    const cfs=clamp(Math.round(34*scale),18,32);
+    ctx.translate(Math.min(W-24, rcx+rw2/2+Math.max(16,Math.round(28*scale))), rTop+dh-6);
+    ctx.rotate(Math.PI/2);
+    ctx.font=S.fe(500,cfs); ctx.fillStyle=P.faint; ctx.textAlign="right";
+    ctx.fillText(D.license, 0, 0);
+    ctx.restore(); ctx.textAlign="left";
+  }
+  /* left column header — big, phone-readable */
+  let y=250;
+  const ns=fitSize(ctx,D.name_en||"",S.fd,800,150,leftW);
+  ctx.font=S.fd(800,ns); ctx.fillStyle=P.accD; ctx.fillText(D.name_en||"", colX-4, y);
+  y+=96;
+  ctx.font=S.fc(500,72); ctx.fillStyle=P.cn; ctx.fillText(D.name_cn||"", colX, y);
+  y+=92;
+  ctx.font=S.fe(500,50); ctx.fillStyle=P.ink; ctx.fillText(D.headline_en||"", colX, y);
+  ctx.font=S.fc(400,42); ctx.fillStyle=P.cn; ctx.fillText(D.headline_cn||"", colX, y+58);
+  y+=126;
+  let chx=colX;
+  if(D.first_flight)
+    chx+=chipLeft(ctx,S,P,"首飞 "+(D.first_flight_cn||D.first_flight),P.accD,chx,y,34)+18;
+  if(cShowStatus(D) && D.status_en) chipLeft(ctx,S,P,(D.status_en+" · "+(D.status_cn||"")).trim(),TONES[D.status_tone]||P.accD,chx,y,34);
+  y+=140;
+  /* measure every block, then include by priority until the column is full */
+  const avail=H-footerH-70-y;
+  const measureFact=(f)=>{
+    ctx.font=S.fe(600,46); const vLines=wrap(ctx,f.value_en||"",leftW);
+    const cnv=(f.value_cn&&f.value_cn!==f.value_en)?f.value_cn:"";
+    ctx.font=S.fc(400,38); const cLines=cnv?wrap(ctx,cnv,leftW):[];
+    return {vLines,cLines,h: 44+ vLines.length*56 + (cLines.length?cLines.length*48+6:0) + 44};
+  };
+  const secH=118, wmH=84;
+  const secs=(D.sections||[]).filter(s=>(s.facts||[]).length)
+    .map(s=>({...s,facts:s.facts.map(f=>({...f,_m:measureFact(f),_p:+f.priority||2}))}));
+  let notes=null;
+  if(D.notes_en||D.notes_cn){
+    ctx.font=S.fe(400,38); const en=wrap(ctx,D.notes_en||"",leftW-70);
+    ctx.font=S.fc(400,36); const cn=wrap(ctx,D.notes_cn||"",leftW-70);
+    notes={en,cn,h: 120+en.length*54+cn.length*50+40+36};
+  }
+  const included=new Set();
+  secs.forEach((s,si)=>s.facts.forEach((f,fi)=>included.add(si+"_"+fi)));
+  let notesIn=!!notes;
+  const totalOf=()=>{
+    let t=wmH;
+    secs.forEach((s,si)=>{
+      const live=s.facts.filter((f,fi)=>included.has(si+"_"+fi));
+      if(live.length) t+=secH+18+live.reduce((a,f)=>a+f._m.h,0)+22;
+    });
+    if(notesIn&&notes) t+=notes.h;
+    return t;
+  };
+  // drop priority 3 → notes → priority 2 → (last resort) priority 1, from the bottom up
+  const dropOne=(pri)=>{
+    for(let si=secs.length-1;si>=0;si--)
+      for(let fi=secs[si].facts.length-1;fi>=0;fi--)
+        if(included.has(si+"_"+fi)&&secs[si].facts[fi]._p===pri){included.delete(si+"_"+fi);return true;}
+    return false;
+  };
+  let guard=200;
+  while(totalOf()>avail && guard--){
+    if(dropOne(3)) continue;
+    if(notesIn){notesIn=false; continue;}
+    if(dropOne(2)) continue;
+    if(dropOne(1)) continue;
+    break;
+  }
+  // if the rocket is longer than the content, justify: share the slack between sections
+  const liveSecCount=secs.filter((s,si)=>s.facts.some((f,fi)=>included.has(si+"_"+fi))).length;
+  const slack=Math.max(0, avail-totalOf());
+  const gapExtra=liveSecCount ? Math.min(240, slack/(liveSecCount+(notesIn?1:0))) : 0;
+  /* render the included blocks */
+  const secTitle=(y2,en,cn)=>{
+    if(S.id==="editorial"||S.id==="broadsheet"){
+      ctx.font=S.fd(700,52); ctx.fillStyle=P.ink; ctx.fillText(en, colX, y2);
+      ctx.font=S.fc(500,38); ctx.fillStyle=P.cn;  ctx.fillText(cn, colX, y2+50);
+      ctx.strokeStyle=P.line; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(colX,y2+72); ctx.lineTo(colX+leftW,y2+72); ctx.stroke();
+      return y2+118;
+    }
+    ctx.fillStyle=P.accD; rr(ctx,colX,y2-40,12,84,S.radius===0.01?0.01:6); ctx.fill();
+    ctx.font=S.fd(800,52); ctx.fillStyle=P.ink; ctx.fillText(en, colX+38, y2);
+    ctx.font=S.fc(500,38); ctx.fillStyle=P.cn;  ctx.fillText(cn, colX+38, y2+48);
+    return y2+98;
+  };
+  let wmDone=false, liveSecIdx=0;
+  secs.forEach((s,si)=>{
+    const live=s.facts.filter((f,fi)=>included.has(si+"_"+fi));
+    if(!live.length) return;
+    y=secTitle(y,(s.title_en||"").toUpperCase(),s.title_cn||"");
+    y+=18;
+    for(const f of live){
+      ctx.font=S.fl(700,30); ctx.fillStyle=P.dim;
+      ctx.fillText(ellipsize(ctx,(f.label_en||"").toUpperCase()+" · "+(f.label_cn||""),leftW), colX, y);
+      ctx.font=S.fe(600,46); ctx.fillStyle=P.ink;
+      f._m.vLines.forEach((l,k)=>ctx.fillText(l, colX, y+56+k*56));
+      let yy=y+56+(f._m.vLines.length-1)*56;
+      if(f._m.cLines.length){ctx.font=S.fc(400,38); ctx.fillStyle=P.cn;
+        f._m.cLines.forEach((l,k)=>ctx.fillText(l, colX, yy+52+k*48));
+        yy+=52+(f._m.cLines.length-1)*48;}
+      ctx.strokeStyle=P.line; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(colX,yy+26); ctx.lineTo(colX+leftW,yy+26); ctx.stroke();
+      y=yy+70;
+    }
+    y+=22+gapExtra;
+    liveSecIdx++;
+    if(!wmDone && liveSecIdx===1){ // watermark after the first live section
+      if(cShowWm(D)){ctx.font=S.fc(400,36); ctx.fillStyle=P.wm; ctx.textAlign="center";
+        ctx.fillText(cWmText(D), colX+leftW/2, y); ctx.textAlign="left";}
+      y+=wmH; wmDone=true;
+    }
+  });
+  if(notesIn&&notes){
+    const nh=notes.h-36;
+    ctx.fillStyle=rgba(P.accDC,S.mode==="scifi"?.14:.07); rr(ctx,colX,y-6,leftW,nh,S.radius===0.01?0.01:16); ctx.fill();
+    ctx.fillStyle=TONES[D.status_tone]||P.accD; rr(ctx,colX,y-6,10,nh,S.radius===0.01?0.01:5); ctx.fill();
+    let yy=y+70;
+    ctx.font=S.fd(800,42); ctx.fillStyle=P.ink; ctx.fillText("REMARKS · 备注", colX+42, yy);
+    yy+=62;
+    ctx.font=S.fe(400,38); ctx.fillStyle=P.ink;
+    for(const l of notes.en){ctx.fillText(l, colX+42, yy); yy+=54;}
+    yy+=4;
+    ctx.font=S.fc(400,36); ctx.fillStyle=P.cn;
+    for(const l of notes.cn){ctx.fillText(l, colX+42, yy); yy+=50;}
+    y+=nh+30;
+  }
+  const endY=y+10;
+  /* footer */
+  ctx.fillStyle=P.deep; ctx.fillRect(0,H-footerH,W,footerH);
+  if(LOGO && cShowLogo(D)){const lh=76,l=tintedLogo("#ffffff"),lw=lh*l.width/l.height;
+    ctx.drawImage(l, M, H-footerH+(footerH-lh)/2, lw, lh);}
+  if(cShowAttrib(D)){
+    ctx.textAlign="right";
+    ctx.font=S.fe(500,30); ctx.fillStyle="rgba(255,255,255,.92)";
+    ctx.fillText("Data: public sources · 公开资料", W-M, H-footerH/2-14);
+    ctx.font=S.fl(400,24); ctx.fillStyle="rgba(255,255,255,.72)";
+    ctx.fillText(cAttribText(D), W-M, H-footerH/2+28);
+    ctx.textAlign="left";
+  }
+  return {cv, endY};
+}
+
+let RPORTS=[];
+function rocketSheetOpts(){
+  return {scale:(+$("rScale").value||96)/100, ratio:ratioOf("rRatW","rRatH")};
+}
+async function buildRocket(D, fixedSeed){
+  const seed = (fixedSeed!==undefined&&fixedSeed!==null) ? fixedSeed : ((Date.now()^(Math.random()*1e9))>>>0);
+  LAST_RK={D,seed};
+  const WD=prepRocket(D);
+  const pv=$("previews"); pv.innerHTML=""; BUILT=[]; RPORTS=[]; RPOSTS=[];
+  const q=new URLSearchParams(location.search);
+  const filter=q.get("styles") ? q.get("styles").split(",") : null;
+  const list=STYLES.filter(s=>!filter||filter.includes(s.id));
+  const dlbar=document.createElement("div"); dlbar.id="dlallbar"; pv.appendChild(dlbar);
+  const grid=document.createElement("div"); grid.id="previewGrid"; pv.appendChild(grid);
+  const stem=(WD.name_en||"rocket").replace(/[\/\\:*?"<>|]/g,"-").replace(/\s+/g,"_");
+  const opts=rocketSheetOpts();
+  for(let i=0;i<list.length;i++){
+    const S=list[i];
+    setStatus(`RENDERING ${S.label.toUpperCase()}…`);
+    await new Promise(r=>setTimeout(r,20));
+    const post=renderRocketPoster(ROCKET,WD,S,mulberry32(seed+i*7919+11));
+    const port=renderRocketPortrait(ROCKET,WD,S,seed+i*7919+53,opts);
+    const grp=document.createElement("div"); grp.className="style-group";
+    grp.innerHTML=`<div class="gtitle">${S.label} · ${S.labelCN}</div>`;
+    const sheetLabel=opts.ratio?`Data sheet ${opts.ratio.w} : ${opts.ratio.h}`:"Data sheet · content height";
+    for(const [cv,name,label] of [
+        [post,`${stem}_${S.id}_poster.png`,"Poster 2.35 : 1"],
+        [port,`${stem}_${S.id}_datasheet.png`,sheetLabel]]){
+      BUILT.push({cv,name});
+      const card=document.createElement("div"); card.className="preview-card";
+      const bar=document.createElement("div"); bar.className="bar";
+      bar.innerHTML=`<div><b>${label}</b><span>${cv.width} × ${cv.height}px</span></div>`;
+      const btn=document.createElement("button"); btn.textContent="Download PNG";
+      btn.onclick=()=>downloadCanvas(cv,name);
+      bar.appendChild(btn); card.appendChild(bar); card.appendChild(cv); grp.appendChild(card);
+      if(cv===port) RPORTS.push({D:WD,S,seedP:seed+i*7919+53,card,cv,name,dims:bar.querySelector("span")});
+      else RPOSTS.push({D:WD,S,seed:seed+i*7919+11,card,cv,name});
+    }
+    grid.appendChild(grp);
+  }
+  const dl=document.createElement("button");
+  dl.textContent=`Download all · ${BUILT.length} files`;
+  dl.onclick=downloadAll;
+  dlbar.appendChild(dl);
+  setStatus("DONE","ok");
+}
+/* live preview: dragging the size slider re-renders the data sheets every ~¼ s */
+let rsTimer=null;
+$("rScale").addEventListener("input",()=>{
+  $("rScaleV").textContent=$("rScale").value;
+  if(!rsTimer) rsTimer=setTimeout(()=>{rsTimer=null; liveResizeSheets();},250);
+});
+function liveResizeSheets(){
+  if(!ROCKET||!RPORTS.length) return;
+  const opts=rocketSheetOpts();
+  for(const rp of RPORTS){
+    const cv=renderRocketPortrait(ROCKET,rp.D,rp.S,rp.seedP,opts);
+    rp.card.replaceChild(cv,rp.cv); rp.cv=cv;
+    rp.dims.textContent=`${cv.width} × ${cv.height}px`;
+    const bi=BUILT.find(b=>b.name===rp.name); if(bi) bi.cv=cv;
+  }
+  setStatus(`ROCKET SIZE ${$("rScale").value}%`,"ok");
+}
+
+/* ---- CC licence line + smart detection from the citation ---- */
+const CC_LIST=["CC0 1.0","CC-BY 4.0","CC-BY-SA 4.0","CC-BY-ND 4.0","CC-BY-NC 4.0","CC-BY-NC-SA 4.0","CC-BY-NC-ND 4.0"];
+const CC_DESC={
+  "CC0 1.0":"Public domain — no rights reserved, any use · 公共领域，放弃所有权利",
+  "CC-BY 4.0":"Any use allowed with attribution · 任何用途，须署名",
+  "CC-BY-SA 4.0":"Attribution + adaptations must share alike · 署名，演绎须以相同方式共享",
+  "CC-BY-ND 4.0":"Attribution, no derivatives · 署名，禁止演绎",
+  "CC-BY-NC 4.0":"Attribution, non-commercial only · 署名，仅限非商业用途",
+  "CC-BY-NC-SA 4.0":"Attribution, non-commercial, share alike · 署名，非商业，相同方式共享",
+  "CC-BY-NC-ND 4.0":"Attribution, non-commercial, no derivatives · 署名，非商业，禁止演绎"};
+for(const sid of ["ccSel","rCcSel"]){
+  const el=$(sid), dv=$(el.dataset.desc);
+  const upd=()=>{dv.textContent=CC_DESC[el.value]||"";};
+  el.addEventListener("change",upd); upd();
+}
+function ccLineOf(D){return `By IZhang/Qatari, ${D.cc||"CC-BY-NC-ND 4.0"}, IZhang航空制图库`;}
+function detectCC(text){
+  if(!text) return null;
+  const t=text.toUpperCase();
+  if(/\bCC\s*0\b|\bCC0\b/.test(t)) return "CC0 1.0";
+  const m=/\bCC[\s-]*BY((?:[\s-]+(?:NC|SA|ND)|-(?:NC|SA|ND))*)/.exec(t);
+  if(!m) return null;
+  const mods=m[1].match(/NC|SA|ND/g)||[];
+  const nc=mods.includes("NC"), sa=mods.includes("SA"), nd=mods.includes("ND");
+  if(sa&&nd) return null;               // contradictory — refuse to guess
+  let name="CC-BY";
+  if(nc) name+="-NC";
+  if(sa) name+="-SA"; else if(nd) name+="-ND";
+  name+=" 4.0";
+  return CC_LIST.includes(name)?name:null;
+}
+$("rLicense").addEventListener("input",()=>{
+  const c=detectCC($("rLicense").value);
+  if(c){$("rCcSel").value=c; $("rCcDesc").textContent=CC_DESC[c]||""; setStatus("LICENSE DETECTED: "+c,"ok");}
+});
+
+/* ---- IF COMM attribution (aircraft): {Author}, CC BY-NC-SA 3.0, {Link}. ---- */
+$("ifComm").addEventListener("change",()=>{$("ifFields").style.display=$("ifComm").checked?"block":"none";});
+for(const b of document.querySelectorAll(".ifPre"))
+  b.addEventListener("click",()=>{$("ifAuthor").value=b.textContent;});
+function iflineOf(){
+  if(!$("ifComm").checked) return "";
+  const a=$("ifAuthor").value.trim();
+  return a ? `${a}, CC BY-NC-SA 3.0, community.infiniteflight.com.` : "";
+}
+$("btnLog").addEventListener("click",()=>$("logModal").style.display="block");
+$("btnLogClose").addEventListener("click",()=>$("logModal").style.display="none");
+$("logModal").addEventListener("click",e=>{if(e.target===$("logModal")) $("logModal").style.display="none";});
+
+/* ---- spinner words (rotates every ~3 s while the removal API works) ---- */
+const SPIN=["Accomplishing","Actioning","Actualizing","Architecting","Baking","Beaming","Beboppin'","Befuddling","Billowing","Blanching","Bloviating","Boogieing","Boondoggling","Booping","Bootstrapping","Brewing","Bunning","Burrowing","Calculating","Canoodling","Caramelizing","Cascading","Catapulting","Cerebrating","Channeling","Channelling","Choreographing","Churning","Clauding","Coalescing","Cogitating","Combobulating","Composing","Computing","Concocting","Considering","Contemplating","Cooking","Crafting","Creating","Crunching","Crystallizing","Cultivating","Deciphering","Deliberating","Determining","Dilly-dallying","Discombobulating","Doing","Doodling","Drizzling","Ebbing","Effecting","Elucidating","Embellishing","Enchanting","Envisioning","Evaporating","Fermenting","Fiddle-faddling","Finagling","Flambéing","Flibbertigibbeting","Flowing","Flummoxing","Fluttering","Forging","Forming","Frolicking","Frosting","Gallivanting","Galloping","Garnishing","Generating","Gesticulating","Germinating","Gitifying","Grooving","Gusting","Harmonizing","Hashing","Hatching","Herding","Honking","Hullaballooing","Hyperspacing","Ideating","Imagining","Improvising","Incubating","Inferring","Infusing","Ionizing","Jitterbugging","Julienning","Kneading","Leavening","Levitating","Lollygagging","Manifesting","Marinating","Meandering","Metamorphosing","Misting","Moonwalking","Moseying","Mulling","Mustering","Musing","Nebulizing","Nesting","Newspapering","Noodling","Nucleating","Orbiting","Orchestrating","Osmosing","Perambulating","Percolating","Perusing","Philosophising","Photosynthesizing","Pollinating","Pondering","Pontificating","Pouncing","Precipitating","Prestidigitating","Processing","Proofing","Propagating","Puttering","Puzzling","Quantumizing","Razzle-dazzling","Razzmatazzing","Recombobulating","Reticulating","Roosting","Ruminating","Sautéing","Scampering","Schlepping","Scurrying","Seasoning","Shenaniganing","Shimmying","Simmering","Skedaddling","Sketching","Slithering","Smooshing","Sock-hopping","Spelunking","Spinning","Sprouting","Stewing","Sublimating","Swirling","Swooping","Symbioting","Synthesizing","Tempering","Thinking","Thundering","Tinkering","Tomfoolering","Topsy-turvying","Transfiguring","Transmuting","Twisting","Undulating","Unfurling","Unravelling","Vibing","Waddling","Wandering","Warping","Whatchamacalliting","Whirlpooling","Whirring","Whisking","Wibbling","Working","Wrangling","Zesting","Zigzagging"];
+
+/* ---- sharpen (unsharp mask) on the background-removed rocket ---- */
+let RPOSTS=[], SHARP_T=null;
+for(const [id,vid] of [["shAmt","shAmtV"],["shRad","shRadV"],["shTh","shThV"]])
+  $(id).addEventListener("input",()=>{
+    $(vid).textContent=$(id).value;
+    if(!SHARP_T) SHARP_T=setTimeout(()=>{SHARP_T=null; applySharpen();},220);
+  });
+function boxBlur2(ch,W,H,r){
+  const tmp=new Float32Array(W*H);
+  for(let pass=0;pass<2;pass++){
+    for(let y=0;y<H;y++){let sum=0,row=y*W;
+      for(let k=-r;k<=r;k++) sum+=ch[row+clamp(k,0,W-1)];
+      for(let x=0;x<W;x++){tmp[row+x]=sum/(2*r+1);
+        sum+=ch[row+clamp(x+r+1,0,W-1)]-ch[row+clamp(x-r,0,W-1)];}}
+    for(let x=0;x<W;x++){let sum=0;
+      for(let k=-r;k<=r;k++) sum+=tmp[clamp(k,0,H-1)*W+x];
+      for(let y=0;y<H;y++){ch[y*W+x]=sum/(2*r+1);
+        sum+=tmp[clamp(y+r+1,0,H-1)*W+x]-tmp[clamp(y-r,0,H-1)*W+x];}}
+  }
+}
+function applySharpen(){
+  if(!ROCKET||!ROCKET.base) return;
+  const amt=+$("shAmt").value/100, rad=+$("shRad").value, th=+$("shTh").value;
+  if(amt<=0){ROCKET.img=ROCKET.base;}
+  else{
+    const W=ROCKET.w,H=ROCKET.h,n=W*H;
+    const src=ROCKET.base.getContext("2d").getImageData(0,0,W,H);
+    const out=new ImageData(new Uint8ClampedArray(src.data),W,H);
+    const ch=new Float32Array(n);
+    for(let cidx=0;cidx<3;cidx++){
+      for(let p=0;p<n;p++) ch[p]=src.data[p*4+cidx];
+      boxBlur2(ch,W,H,rad);
+      for(let p=0;p<n;p++){
+        const i=p*4;
+        if(src.data[i+3]<10) continue;
+        const o=src.data[i+cidx], diff=o-ch[p];
+        if(Math.abs(diff)<th) continue;
+        out.data[i+cidx]=clamp(o+amt*diff,0,255);
+      }
+    }
+    const c=document.createElement("canvas"); c.width=W; c.height=H;
+    c.getContext("2d").putImageData(out,0,0);
+    ROCKET.img=c;
+  }
+  const tc=document.createElement("canvas");
+  tc.width=220; tc.height=Math.round(220*ROCKET.h/ROCKET.w);
+  tc.getContext("2d").drawImage(ROCKET.img,0,0,tc.width,tc.height);
+  $("rThumb").src=tc.toDataURL();
+  if(RPORTS.length||RPOSTS.length) rebuildRocketPreviews();
+  setStatus("SHARPEN "+$("shAmt").value+"%","ok");
+}
+function rebuildRocketPreviews(){
+  for(const rp of RPOSTS){
+    const cv=renderRocketPoster(ROCKET,rp.D,rp.S,mulberry32(rp.seed));
+    rp.card.replaceChild(cv,rp.cv); rp.cv=cv;
+    const bi=BUILT.find(b=>b.name===rp.name); if(bi) bi.cv=cv;
+  }
+  liveResizeSheets();
+}
+
+/* ================= V4.0 — client customization, editable ghost text,
+   ground shadow, aircraft sharpen + background removal ================= */
+
+/* ---- ground shadow (Shadow.png): scaled to the aircraft width; the aircraft's
+   bottom pixel lands on the row 18px below the shadow's top coloured row ---- */
+let SHADOW=null, SHADOW_BOX=null;
+function shadowBox(img){
+  const W=Math.min(1400,img.naturalWidth), H=Math.max(1,Math.round(img.naturalHeight*W/img.naturalWidth));
+  const c=document.createElement("canvas"); c.width=W; c.height=H;
+  const x=c.getContext("2d",{willReadFrequently:true}); x.drawImage(img,0,0,W,H);
+  const d=x.getImageData(0,0,W,H).data; let x0=W,x1=0,y0=H,y1=0;
+  for(let y=0;y<H;y++)for(let xx=0;xx<W;xx++) if(d[(y*W+xx)*4+3]>10){if(xx<x0)x0=xx;if(xx>x1)x1=xx;if(y<y0)y0=y;if(y>y1)y1=y;}
+  const s=img.naturalWidth/W;
+  return {x0:x0*s,y0:y0*s,x1:x1*s,y1:y1*s,w:img.naturalWidth,h:img.naturalHeight};
+}
+(function(){const s=new Image(); s.onload=()=>{SHADOW=s; SHADOW_BOX=shadowBox(s);}; s.src="/static/shadow.png";})();
+let BARCODE=new Image(); BARCODE.src="/static/barcode.png"; // real barcode image (never synthesized)
+
+/* ---- boarding-pass fields: DeepSeek's boarding_pass block + stable random extras ---- */
+function hashStr(s){let h=2166136261>>>0; for(let i=0;i<s.length;i++){h^=s.charCodeAt(i); h=Math.imul(h,16777619);} return h>>>0;}
+const BP_AIRPORTS=[["PEK","Beijing"],["CAN","Guangzhou"],["PVG","Shanghai"],["HKG","Hong Kong"],
+  ["LAX","Los Angeles"],["JFK","New York"],["LHR","London"],["DXB","Dubai"],["SIN","Singapore"],
+  ["SYD","Sydney"],["NRT","Tokyo"],["CDG","Paris"],["FRA","Frankfurt"],["DOH","Doha"],["AMS","Amsterdam"]];
+function bpData(D){
+  const bp=D.boarding_pass||{};
+  const reg=(D.reg||"IZHANG").toUpperCase();
+  const rng=mulberry32(hashStr(reg+"|"+(D.airline_en||"")));
+  const ri=(n)=>Math.floor(rng()*n); // 0..n-1, always non-negative & deterministic
+  const B36="ABCDEFGHIJKLMNPQRSTUVWXYZ0123456789";
+  const pnr=Array.from({length:6},()=>B36[ri(B36.length)]).join("");
+  const num3=(bp.airline_numeric&&/^\d{3}$/.test(bp.airline_numeric))?bp.airline_numeric:String(100+ri(899));
+  let tkt=num3+" "; for(let i=0;i<10;i++) tkt+=ri(10);
+  const seq=String(1+ri(250)).padStart(3,"0");
+  const iata=bp.airline_iata||((D.airline_en||"XX").replace(/[^A-Za-z]/g,"").slice(0,2).toUpperCase()||"XX");
+  const fa=BP_AIRPORTS[ri(BP_AIRPORTS.length)];
+  let fb=BP_AIRPORTS[ri(BP_AIRPORTS.length)];
+  if(fb[0]===fa[0]) fb=BP_AIRPORTS[(BP_AIRPORTS.indexOf(fa)+1)%BP_AIRPORTS.length];
+  const M2=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"], now=new Date();
+  const date=`${String(now.getDate()).padStart(2,"0")} ${M2[now.getMonth()]} ${now.getFullYear()}`;
+  return {
+    passenger:"MR IZHANG FLY",
+    from_iata:bp.from_iata||fa[0], from_city:bp.from_city||fa[1],
+    to_iata:bp.to_iata||fb[0], to_city:bp.to_city||fb[1],
+    flight:bp.flight_no||(iata+" "+(100+ri(899))), date,
+    dep:bp.dep_time||"12:40", boarding:bp.boarding_time||"12:00",
+    gate:bp.gate||("A"+(1+ri(40))),
+    seat:bp.seat||((1+ri(40))+["A","C","D","F","K"][ri(5)]),
+    zone:bp.zone||String(1+ri(6)), fare_class:bp.fare_class||"Y",
+    fare_basis:bp.fare_basis||"YLXR3M", tier:bp.tier||"Gold",
+    price:bp.price||"USD 980.00", pnr, ticket:tkt, seq
+  };
+}
+function drawShadow(ctx,left,width,bottom){
+  if(!SHADOW||!SHADOW_BOX) return;
+  const b=SHADOW_BOX, cw=(b.x1-b.x0+1), k=width/cw;
+  ctx.drawImage(SHADOW, left-b.x0*k, bottom-(b.y0+18)*k, b.w*k, b.h*k);
+}
+
+/* ---- customization guards read from D._cust (attached at build time) ---- */
+function cShowLogo(D){const c=D&&D._cust; return !(c&&c.on&&!c.showLogo);}
+function cShowWm(D){const c=D&&D._cust; if(!(c&&c.on)) return true; return c.wmOn&&(c.wmText||"").trim()!=="";}
+function cWmText(D){const c=D&&D._cust; return (c&&c.on)? c.wmText : WATERMARK;}
+function cShowStatus(D){const c=D&&D._cust; return !(c&&c.on&&!c.statusOn);}
+function cShowAttrib(D){const c=D&&D._cust; return !(c&&c.on&&!c.attrOn);}
+function cAttribText(D){const c=D&&D._cust; return (c&&c.on&&c.attrText)? c.attrText : ccLineOf(D);}
+
+/* ---- read the ghost (background registration) editor for a given prefix ---- */
+function readGhost(p){
+  const on=$(p+"On"); if(!on||!on.checked||!$(p+"Text")) return null;
+  return {on:true, text:$(p+"Text").value, font:$(p+"Font").value,
+    bold:$(p+"Bold").checked, italic:$(p+"Italic").checked, color:$(p+"Color").value,
+    alpha:(+$(p+"Alpha").value)/100, size:+$(p+"Size").value,
+    px:(+$(p+"PX").value)/100, py:(+$(p+"PY").value)/100};
+}
+const GHOST_FONTS=["Helvetica Neue","Arial","Arial Black","Impact","Futura","Century Gothic",
+  "Georgia","Times New Roman","Courier New","Space Mono","PingFang SC","Heiti SC","Songti SC",
+  "STKaiti","Microsoft YaHei","SimHei","SimSun","KaiTi"];
+function fontOpts(){
+  const serif=new Set(["Georgia","Times New Roman","Songti SC","STKaiti","SimSun"]);
+  const mono=new Set(["Courier New","Space Mono"]);
+  return `<option value="">Default (style font)</option>`+GHOST_FONTS.map(n=>{
+    const fb=mono.has(n)?"monospace":serif.has(n)?"serif":"sans-serif";
+    return `<option value='"${n}", ${fb}'>${n}</option>`;}).join("");
+}
+function injectGhostEditor(p,host){
+  host.innerHTML=`
+    <input type="text" id="${p}Text" placeholder="registration (blank = hide it)" spellcheck="false">
+    <div style="margin-top:8px"><label>Font 字体</label><select id="${p}Font">${fontOpts()}</select></div>
+    <div class="row" style="margin-top:8px;align-items:center">
+      <label style="display:flex;gap:6px;align-items:center;text-transform:none;margin:0"><input type="checkbox" id="${p}Bold" style="accent-color:var(--green)">Bold</label>
+      <label style="display:flex;gap:6px;align-items:center;text-transform:none;margin:0"><input type="checkbox" id="${p}Italic" style="accent-color:var(--green)">Italic</label>
+      <div style="display:flex;gap:6px;align-items:center;flex:0 0 auto"><label style="margin:0">Colour</label>
+        <input type="color" id="${p}Color" value="#20304a" style="width:34px;height:24px;padding:0;border:1px solid var(--line);background:var(--panel2)"></div>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <div><label>Opacity <span id="${p}AlphaV">14</span>%</label><input type="range" id="${p}Alpha" min="0" max="60" value="14" style="width:100%;accent-color:var(--green)"></div>
+      <div><label>Size <span id="${p}SizeV">auto</span></label><input type="range" id="${p}Size" min="0" max="760" value="0" style="width:100%;accent-color:var(--green)"></div>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <div><label>Position X <span id="${p}PXV">0</span></label><input type="range" id="${p}PX" min="-50" max="50" value="0" style="width:100%;accent-color:var(--green)"></div>
+      <div><label>Position Y <span id="${p}PYV">0</span></label><input type="range" id="${p}PY" min="-50" max="50" value="0" style="width:100%;accent-color:var(--green)"></div>
+    </div>`;
+  const upd=()=>{ $(p+"AlphaV").textContent=$(p+"Alpha").value;
+    $(p+"SizeV").textContent=(+$(p+"Size").value)?$(p+"Size").value:"auto";
+    $(p+"PXV").textContent=$(p+"PX").value; $(p+"PYV").textContent=$(p+"PY").value; };
+  host.querySelectorAll("input,select").forEach(el=>{
+    el.addEventListener("input",()=>{upd(); scheduleRebuild("ac");});
+    el.addEventListener("change",()=>{upd(); scheduleRebuild("ac");});});
+  upd();
+}
+function wireGhost(p){
+  const on=$(p+"On"), body=$(p+"Body");
+  on.addEventListener("change",()=>{
+    if(on.checked&&!body.dataset.built){injectGhostEditor(p,body); body.dataset.built="1";
+      const r=($("reg")&&$("reg").value.trim()); if(r) $(p+"Text").value=r;}
+    body.style.display=on.checked?"block":"none";
+    scheduleRebuild("ac");});
+}
+wireGhost("gp"); wireGhost("gs");
+
+/* ---- registration input is always upper-cased as you type ---- */
+$("reg").addEventListener("input",e=>{
+  const s=e.target.selectionStart, en=e.target.selectionEnd, u=e.target.value.toUpperCase();
+  if(u!==e.target.value){ e.target.value=u; e.target.setSelectionRange(s,en); }
+});
+
+/* ---- tail magnifier: a zoomed square on the rear fuselage (where the reg sits);
+   updates live as you sharpen. ⇄ flips to the other end for nose-right images ---- */
+let MAG_FLIP=false;
+function updateMagnifier(){
+  const cv=$("magCanvas"); if(!cv||!AIRCRAFT||!AIRCRAFT.img) return;
+  const cw=720, ch=440; cv.width=cw; cv.height=ch;
+  const cx=cv.getContext("2d"); cx.imageSmoothingEnabled=true; cx.imageSmoothingQuality="high";
+  cx.fillStyle="#0c0f0c"; cx.fillRect(0,0,cw,ch);
+  const A=AIRCRAFT, frac=0.36;
+  const sx0 = MAG_FLIP ? A.bx0 + A.bw*0.04 : A.bx0 + A.bw*(1-0.04-frac);
+  const sw=A.bw*frac, sy0=A.by0 + A.bh*0.08, sh=A.bh*0.86;
+  const scale=Math.max(cw/sw, ch/sh);
+  const dw=sw*scale, dh=sh*scale;
+  cx.drawImage(A.img, sx0,sy0,sw,sh, (cw-dw)/2,(ch-dh)/2, dw,dh);
+  cx.strokeStyle="rgba(55,247,18,.55)"; cx.lineWidth=2; cx.strokeRect(1.5,1.5,cw-3,ch-3);
+}
+$("magFlip").addEventListener("click",()=>{MAG_FLIP=!MAG_FLIP; updateMagnifier();});
+
+/* ---- aircraft drop shadow (soft glow uniformly around the silhouette rim) ---- */
+function readRim(){
+  if(!$("acRim").checked) return {on:false};
+  return {on:true, blur:+$("acRimW").value, opacity:(+$("acRimO").value)/100, amount:+$("acRimA").value};
+}
+function rimShadow(D,S){
+  const r=D&&D._rim; if(!r||!r.on||!(r.blur>0)||!(r.opacity>0)) return null;
+  const c = S.dark ? "210,220,240" : "12,14,20"; // light glow on dark styles, dark shadow on light
+  return {on:true, blur:r.blur, opacity:r.opacity, amount:r.amount, color:`rgba(${c},${r.opacity})`};
+}
+for(const [id,vid] of [["acRimW","acRimWV"],["acRimO","acRimOV"],["acRimA","acRimAV"]])
+  $(id).addEventListener("input",()=>{$(vid).textContent=$(id).value; scheduleRebuild("ac");});
+$("acRim").addEventListener("change",()=>scheduleRebuild("ac"));
+
+/* ---- client customization panel (shared aircraft/rocket) ---- */
+function readCustom(p){
+  const onEl=$(p+"CustOn"); const on=!!(onEl&&onEl.checked);
+  if(!on||!$(p+"LogoOn")) return {on:false};
+  const hidden={facts:new Set(),history:new Set(),kf:new Set(),sf:new Set()};
+  document.querySelectorAll("#"+p+"Bars input[type=checkbox]").forEach(cb=>{
+    if(cb.checked) return; const t=cb.dataset.kind, i=cb.dataset.idx;
+    if(t==="fact") hidden.facts.add(+i); else if(t==="hist") hidden.history.add(+i);
+    else if(t==="kf") hidden.kf.add(+i); else if(t==="sf") hidden.sf.add(i);});
+  return {on:true, showLogo:$(p+"LogoOn").checked, wmOn:$(p+"WmOn").checked,
+    wmText:$(p+"WmText").value, statusOn:$(p+"StatusOn").checked,
+    attrOn:$(p+"AttrOn").checked, attrText:$(p+"AttrText").value.trim(), hidden};
+}
+function injectCustom(p,host){
+  host.innerHTML=`
+    <div class="row" style="align-items:center">
+      <label style="display:flex;gap:6px;align-items:center;text-transform:none;margin:0;flex:1"><input type="checkbox" id="${p}LogoOn" checked style="accent-color:var(--green)">Show logo</label>
+      <button class="ghost" id="${p}LogoBtn" type="button" style="padding:6px 10px;flex:0 0 auto">Upload logo</button>
+      <button class="ghost" id="${p}LogoReset" type="button" style="padding:6px 10px;flex:0 0 auto">Reset</button>
+      <input type="file" id="${p}LogoFile" accept="image/png,image/webp" style="display:none">
+    </div>
+    <div style="margin-top:10px"><label style="display:flex;gap:6px;align-items:center;text-transform:none"><input type="checkbox" id="${p}WmOn" checked style="accent-color:var(--green)">Show watermark 水印 (clear text to remove)</label>
+      <input type="text" id="${p}WmText" value="${WATERMARK}" style="margin-top:6px" spellcheck="false"></div>
+    <div style="margin-top:10px"><label style="display:flex;gap:6px;align-items:center;text-transform:none"><input type="checkbox" id="${p}StatusOn" checked style="accent-color:var(--green)">Show status capsule 状态标签</label></div>
+    <div style="margin-top:10px"><label style="display:flex;gap:6px;align-items:center;text-transform:none"><input type="checkbox" id="${p}AttrOn" checked style="accent-color:var(--green)">Show attribution / citation 署名</label>
+      <input type="text" id="${p}AttrText" placeholder="(blank = default CC line)" style="margin-top:6px" spellcheck="false"></div>
+    <div style="margin-top:12px">
+      <div class="row" style="align-items:center"><label style="margin:0;flex:1">Information bars 信息栏 · uncheck to hide</label>
+        <button class="ghost" id="${p}BarsRefresh" type="button" style="padding:6px 10px;flex:0 0 auto">↻ From data</button></div>
+      <div id="${p}Bars" style="margin-top:8px;display:flex;flex-direction:column;gap:5px;max-height:240px;overflow:auto"></div>
+    </div>`;
+  $(p+"LogoBtn").addEventListener("click",()=>$(p+"LogoFile").click());
+  $(p+"LogoFile").addEventListener("change",e=>{if(e.target.files[0]) setCustomLogo(e.target.files[0]);});
+  $(p+"LogoReset").addEventListener("click",resetLogo);
+  $(p+"BarsRefresh").addEventListener("click",()=>{refreshBars(p); scheduleRebuild(p);});
+  host.querySelectorAll("input[type=checkbox],input[type=text]").forEach(el=>{
+    el.addEventListener("input",()=>scheduleRebuild(p));
+    el.addEventListener("change",()=>scheduleRebuild(p));});
+}
+function refreshBars(p){
+  const host=$(p+"Bars"); if(!host) return;
+  const raw=(p==="ac")?$("json").value:$("rJson").value;
+  let D=null; try{D=JSON.parse(raw);}catch(e){}
+  host.innerHTML="";
+  if(!D){host.innerHTML='<div style="color:var(--dim);font-size:11px">No parsed data — Synthesize / paste JSON first.</div>'; return;}
+  const add=(kind,idx,label)=>{
+    const row=document.createElement("label");
+    row.style.cssText="display:flex;gap:7px;align-items:center;text-transform:none;font-size:11.5px;color:var(--text)";
+    row.innerHTML=`<input type="checkbox" checked data-kind="${kind}" data-idx="${idx}" style="accent-color:var(--green)"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${label}</span>`;
+    host.appendChild(row);};
+  if(p==="ac"){
+    (D.facts||[]).forEach((f,i)=>add("fact",i,"FACT · "+(f.label_en||"")));
+    (D.history||[]).forEach((r,i)=>add("hist",i,"HIST · "+(r.period||"")+" "+(r.operator_en||"")));
+  }else{
+    (D.key_facts||[]).forEach((f,i)=>add("kf",i,"KEY · "+(f.label_en||"")));
+    (D.sections||[]).forEach((s,si)=>(s.facts||[]).forEach((f,fi)=>add("sf",si+"_"+fi,(s.title_en||"")+" · "+(f.label_en||""))));
+  }
+  host.querySelectorAll("input").forEach(cb=>cb.addEventListener("change",()=>scheduleRebuild(p)));
+}
+function wireCustom(p){
+  const on=$(p+"CustOn"), body=$(p+"CustBody");
+  on.addEventListener("change",()=>{
+    if(on.checked&&!body.dataset.built){injectCustom(p,body); body.dataset.built="1"; refreshBars(p);}
+    body.style.display=on.checked?"block":"none";
+    scheduleRebuild(p);});
+}
+wireCustom("ac"); wireCustom("rk");
+
+/* ---- custom logo swaps the shared logo globals; reset reloads the default ---- */
+function setCustomLogo(file){
+  const img=new Image();
+  img.onload=()=>{LOGO=img; LOGO_BOX=trimBox(img); LOGO_TINTS={}; setStatus("CUSTOM LOGO LOADED — REBUILD APPLIES IT","ok"); scheduleRebuild(currentView());};
+  img.onerror=()=>setStatus("COULD NOT LOAD LOGO IMAGE","err");
+  img.src=URL.createObjectURL(file);
+}
+function resetLogo(){
+  const img=new Image();
+  img.onload=()=>{LOGO=img; LOGO_BOX=trimBox(img); LOGO_TINTS={}; setStatus("LOGO RESET TO DEFAULT","ok"); scheduleRebuild(currentView());};
+  img.src="/static/logo.png";
+}
+function currentView(){return $("viewRocket").style.display!=="none"?"rk":"ac";}
+
+/* ---- build-input preparation: clone data, attach options, filter hidden bars ---- */
+function prepAircraft(D){
+  const WD=JSON.parse(JSON.stringify(D||{}));
+  WD.cc=$("ccSel").value;
+  WD.ifline=iflineOf();
+  const c=readCustom("ac");
+  if(c.on){
+    if(Array.isArray(WD.facts)) WD.facts=WD.facts.filter((_,i)=>!c.hidden.facts.has(i));
+    if(Array.isArray(WD.history)) WD.history=WD.history.filter((_,i)=>!c.hidden.history.has(i));
+  }
+  WD._cust=c;
+  WD._shadow=$("acShadow").checked;
+  WD._rim=readRim();
+  WD._ghostP=readGhost("gp");
+  WD._ghostS=readGhost("gs");
+  return WD;
+}
+function prepRocket(D){
+  const WD=JSON.parse(JSON.stringify(D||{}));
+  WD.cc=$("rCcSel").value;
+  WD.license=($("rLicense").value.trim())||WD.license||"";
+  const c=readCustom("rk");
+  if(c.on){
+    if(Array.isArray(WD.key_facts)) WD.key_facts=WD.key_facts.filter((_,i)=>!c.hidden.kf.has(i));
+    if(Array.isArray(WD.sections)) WD.sections=WD.sections.map((s,si)=>({...s,facts:(s.facts||[]).filter((_,fi)=>!c.hidden.sf.has(si+"_"+fi))}));
+  }
+  WD._cust=c;
+  return WD;
+}
+
+/* ---- trailing-debounced live rebuild for whichever view is active ---- */
+let LAST_AC=null, LAST_RK=null, REBUILD_T=null;
+function scheduleRebuild(p){
+  if(p==="ac"&&!LAST_AC) return;
+  if(p==="rk"&&!LAST_RK) return;
+  clearTimeout(REBUILD_T);
+  REBUILD_T=setTimeout(()=>{ if(p==="ac") buildAll(LAST_AC.D,LAST_AC.seed); else buildRocket(LAST_RK.D,LAST_RK.seed); },300);
+}
+
+/* ---- aircraft sharpen (unsharp mask), default off; live-rebuilds previews ---- */
+let ACSHARP_T=null;
+for(const [id,vid] of [["acShAmt","acShAmtV"],["acShRad","acShRadV"],["acShTh","acShThV"]])
+  $(id).addEventListener("input",()=>{ $(vid).textContent=$(id).value;
+    if(!ACSHARP_T) ACSHARP_T=setTimeout(()=>{ACSHARP_T=null; applyAircraftSharpen();},220);});
+function unsharpCanvas(base,amt,rad,th){
+  const W=base.width,H=base.height,n=W*H;
+  const src=base.getContext("2d").getImageData(0,0,W,H);
+  const out=new ImageData(new Uint8ClampedArray(src.data),W,H);
+  const ch=new Float32Array(n);
+  for(let cidx=0;cidx<3;cidx++){
+    for(let p=0;p<n;p++) ch[p]=src.data[p*4+cidx];
+    boxBlur2(ch,W,H,rad);
+    for(let p=0;p<n;p++){const i=p*4; if(src.data[i+3]<10) continue;
+      const o=src.data[i+cidx], diff=o-ch[p]; if(Math.abs(diff)<th) continue;
+      out.data[i+cidx]=clamp(o+amt*diff,0,255);}
+  }
+  const c=document.createElement("canvas"); c.width=W; c.height=H;
+  c.getContext("2d").putImageData(out,0,0); return c;
+}
+function applyAircraftSharpen(){
+  if(!AIRCRAFT||!AIRCRAFT.base) return;
+  const amt=+$("acShAmt").value/100, rad=+$("acShRad").value, th=+$("acShTh").value;
+  AIRCRAFT.img = amt<=0 ? AIRCRAFT.base : unsharpCanvas(AIRCRAFT.base,amt,rad,th);
+  $("thumb").src=AIRCRAFT.img.toDataURL("image/png"); // full-res preview
+  updateMagnifier(); // live magnifier reflects the sharpening
+  setStatus("SHARPEN "+$("acShAmt").value+"%","ok");
+  scheduleRebuild("ac");
+}
+
+/* ---- aircraft intake: cap → base canvas → analysis; transparent skips API ---- */
+function ingestAircraft(img,name){
+  const cap=2600, nW=img.naturalWidth||img.width, nH=img.naturalHeight||img.height;
+  const sc=Math.min(1,cap/Math.max(nW,nH));
+  const W=Math.round(nW*sc), H=Math.round(nH*sc);
+  const base=document.createElement("canvas"); base.width=W; base.height=H;
+  base.getContext("2d").drawImage(img,0,0,W,H);
+  AIRCRAFT=analyzeImage(base); AIRCRAFT.base=base; AIRCRAFT.img=base;
+  dz.classList.add("loaded");
+  dz.firstChild.textContent=(name||"image")+" — livery colours detected";
+  const t=$("thumb"); t.src=base.toDataURL("image/png"); t.style.display="inline-block"; // full-res preview
+  $("acSharpen").style.display="flex"; $("acShAmt").value=0; $("acShAmtV").textContent="0";
+  buildSwatchUI();
+  updateMagnifier();
+  setStatus("IMAGE ANALYSED","ok");
+}
+
+/* ================= logo + demo mode ================= */
+LOGO=new Image();
+LOGO.onload=()=>{ LOGO_BOX=trimBox(LOGO); if(new URLSearchParams(location.search).has("demo")) runDemo(); };
+LOGO.src="/static/logo.png";
+
+const DEMO_DATA={
+  reg:"B-2788", airline_en:"China Southern Airlines", airline_cn:"中国南方航空",
+  manufacturer:"Boeing", type_en:"Boeing 787-8 Dreamliner", type_cn:"波音787-8梦想客机",
+  headline_en:"Boeing 787-8", headline_cn:"波音787-8",
+  status_en:"Active", status_cn:"运营中", status_tone:"ok",
+  facts:[
+    {label_en:"Manufacturer Serial Number",label_cn:"制造序列号",value_en:"34925",value_cn:"34925"},
+    {label_en:"Line Number",label_cn:"生产线编号",value_en:"90",value_cn:"90"},
+    {label_en:"First Flight",label_cn:"首飞日期",value_en:"26 Apr 2013",value_cn:"2013年4月26日"},
+    {label_en:"Age",label_cn:"机龄",value_en:"13.2 Years",value_cn:"13.2年"},
+    {label_en:"Production Site",label_cn:"生产地点",value_en:"Everett (PAE)",value_cn:"埃弗雷特工厂"},
+    {label_en:"Engines",label_cn:"发动机",value_en:"2× GE GEnx-1B64",value_cn:"2台 GE GEnx-1B64"},
+    {label_en:"Cabin Configuration",label_cn:"客舱构型",value_en:"C4W24Y200",value_cn:"公务舱4 · 明珠经济舱24 · 经济舱200"},
+    {label_en:"Hex Code",label_cn:"应答机编码",value_en:"780D62",value_cn:"780D62"}
+  ],
+  history:[
+    {reg:"B-2788",operator_en:"China Southern",operator_cn:"中国南方航空",period:"Jun 2013 –",note_en:"4th 787 delivered to CZ",note_cn:"南航第四架787"},
+    {reg:"B-2788",operator_en:"China Southern",operator_cn:"中国南方航空",period:"2016 – 2018",note_en:"based at CAN for CAN–LAX",note_cn:"广州基地执飞广州—洛杉矶"},
+    {reg:"B-2788",operator_en:"China Southern",operator_cn:"中国南方航空",period:"2020",note_en:"std at CAN during pandemic",note_cn:"疫情期间封存于广州"},
+    {reg:"B-2788",operator_en:"China Southern",operator_cn:"中国南方航空",period:"2021 –",note_en:"returned to service",note_cn:"恢复运营"}
+  ],
+  notes_en:"One of the first ten Boeing 787-8s operated in mainland China. The aircraft wears China Southern's signature blue lotus livery and has flown trunk routes from Guangzhou to Europe, Oceania and North America.",
+  notes_cn:"中国大陆最早运营的十架波音787-8之一。该机涂装南航标志性的蓝色木棉花彩绘，长期执飞广州至欧洲、大洋洲及北美的干线航线。",
+  boarding_pass:{airline_iata:"CZ",airline_numeric:"784",flight_no:"CZ 327",from_iata:"CAN",from_city:"Guangzhou",to_iata:"LAX",to_city:"Los Angeles",dep_time:"12:40",boarding_time:"12:00",gate:"A12",seat:"12A",zone:"3",fare_class:"Y",fare_basis:"YLXR3M",tier:"Gold",price:"USD 1180.00"}
+};
+async function runDemo(){
+  const q=new URLSearchParams(location.search);
+  if(q.get("demo")==="rocket"){ // rocket demo: keyed test image + canned data
+    $("viewAircraft").style.display="none"; $("viewRocket").style.display="flex";
+    const data=await (await fetch(q.get("data")||"/static/demo/lm10b.json")).json();
+    if(q.get("lic")){data.license=q.get("lic"); $("rLicense").value=data.license;}
+    if(q.get("rscale")){$("rScale").value=q.get("rscale"); $("rScaleV").textContent=q.get("rscale");}
+    if(q.get("ratw")){$("rRatW").value=q.get("ratw"); $("rRatH").value=q.get("rath")||"";}
+    $("rJson").value=JSON.stringify(data,null,2);
+    $("rName").value=data.name_en||"";
+    const blob=await (await fetch(q.get("img")||"/static/demo/rocket_keyed.png")).blob();
+    const f=new File([blob],"rocket.png",{type:blob.type});
+    const orig=setStatus;
+    loadRocketFile(f);
+    setTimeout(()=>buildRocket(data),900);
+    return;
+  }
+  let data=DEMO_DATA;
+  if(q.has("virtual"))
+    data={virtual:true, reg:"B-2788", airline_en:"IZhang Skyworks", airline_cn:"",
+          type_en:"Boeing 787-8", type_cn:"波音787-8",
+          status_en:"Virtual Livery", status_cn:"虚拟涂装", status_tone:"virtual"};
+  else if(q.get("data")){
+    try{data=await (await fetch(q.get("data"))).json();}catch(e){setStatus("DEMO DATA FETCH FAILED","err");}
+  }
+  const img=new Image();
+  img.onload=()=>{ingestAircraft(img,"demo");
+    $("reg").value=data.reg||"";
+    $("json").value=JSON.stringify(data,null,2);
+    if(q.has("shadow")) $("acShadow").checked=true; // QA hooks
+    if(q.has("sharpen")){const a=+(q.get("sharpen")||120); $("acShAmt").value=a; $("acShAmtV").textContent=a;
+      AIRCRAFT.img=unsharpCanvas(AIRCRAFT.base,a/100,+$("acShRad").value,+$("acShTh").value);}
+    if(q.has("gp")){$("gpOn").checked=true; injectGhostEditor("gp",$("gpBody")); $("gpBody").dataset.built="1"; $("gpBody").style.display="block";
+      $("gpText").value=q.get("gp")||"CUSTOM"; $("gpColor").value="#c81e5a"; $("gpAlpha").value=32; $("gpSize").value=520; $("gpBold").checked=true;}
+    if(q.has("cust")){$("acCustOn").checked=true; injectCustom("ac",$("acCustBody")); $("acCustBody").dataset.built="1"; $("acCustBody").style.display="block"; refreshBars("ac");
+      $("acLogoOn").checked=false; $("acWmOn").checked=false; $("acStatusOn").checked=false;
+      const bars=document.querySelectorAll("#acBars input"); if(bars[1]) bars[1].checked=false;}
+    buildAll(data);};
+  img.src=q.get("img")||"/static/demo/demo.png";
+}
+
+/* V5 deep links: /rocket auto-switches into rocket mode; ?dbimg=<id> pulls
+   that record's image from the pipeline DB straight into the aircraft flow. */
+/* V5.2 brew mode (?brew=<entry_id>): headless renderer entry point — loads the
+   job (toggles + DeepSeek JSON + image), renders every style with buildAll,
+   uploads each canvas in strict poster→datasheet order, then signals done. */
+async function runBrew(jobId){
+  try{
+    const job=await (await fetch("/api/v5/brew_job/"+jobId)).json();
+    $("acShadow").checked=!!job.ground_shadow;
+    $("acRim").checked=(job.drop_shadow!==false);
+    if(job.source_credit){ $("ifComm").checked=true; $("ifAuthor").value=job.source_credit; }
+    if(job.license){ try{ $("ccSel").value=job.license; }catch(e){} } // SA sources stay SA
+    const data=job.deepseek||{};
+    if(!data.reg) data.reg=job.reg||"";
+    if(job.airline && !data.airline_en) data.airline_en=job.airline;
+    if(job.fictional){ data.virtual=true; if(!data.status_tone) data.status_tone="virtual"; }
+    $("reg").value=data.reg||""; $("json").value=JSON.stringify(data,null,1);
+    const blob=await (await fetch("/api/v5/img/"+job.entry_id)).blob();
+    // Same path as a manual upload: background detection (incl. the V5.2
+    // floating-decals check) + removal API when needed.
+    const file=new File([blob],"brew-"+jobId+".png",{type:blob.type||"image/png"});
+    withBgRemoval(file, async(img)=>{
+      try{
+        ingestAircraft(img,"brew-"+jobId);
+        await buildAll(data, 20260713);   // fixed seed = reproducible renders
+        let seq=0, sent=0;
+        for(const {cv,name} of BUILT){
+          seq++;
+          if(job.poster_only && name.indexOf("_poster")<0) continue;
+          const b=await new Promise(r=>cv.toBlob(r,"image/png"));
+          const fd=new FormData();
+          fd.append("image", b, name); fd.append("name", name); fd.append("seq", String(seq));
+          const rs=await fetch("/api/v5/brew_result/"+jobId,{method:"POST",body:fd});
+          if(rs.ok) sent++;
+        }
+        await fetch("/api/v5/brew_done/"+jobId,{method:"POST",
+          headers:{"Content-Type":"application/json"},body:JSON.stringify({count:sent})});
+        window.__BREW_DONE__=sent;
+        setStatus("BREW COMPLETE — "+sent+" images uploaded","ok");
+      }catch(err){ window.__BREW_ERROR__=String(err); setStatus("BREW FAILED: "+err,"err"); }
+    });
+  }catch(err){ window.__BREW_ERROR__=String(err); }
+}
+(function(){
+  if(location.pathname.indexOf("/rocket")===0){
+    try{ $("goRocket").click(); }catch(e){}
+  }
+  const q=new URLSearchParams(location.search);
+  if(q.get("brew")){ runBrew(q.get("brew")); return; }
+  const dbid=q.get("dbimg");
+  if(dbid){
+    fetch("/api/v5/img/"+dbid).then(r=>{ if(!r.ok) throw 0; return r.blob(); })
+      .then(b=>loadFile(new File([b],"db-"+dbid+".png",{type:b.type||"image/png"})))
+      .catch(()=>console.warn("V5: image "+dbid+" not on server"));
+  }
+})();
+</script>
+</body>
+</html>
